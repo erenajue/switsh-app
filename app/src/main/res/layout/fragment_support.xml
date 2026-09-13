@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F2F4F1"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Support"
+        android:textColor="#111827"
+        android:textSize="26sp"
+        android:textStyle="bold" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_weight="1"
+        app:cardBackgroundColor="#FFFFFF"
+        app:cardCornerRadius="22dp"
+        app:cardElevation="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#E8F7F2"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="8dp"
+                android:text="Bonjour, je voudrais bloquer ma carte."
+                android:textColor="#111827" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:background="#0E6B5C"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="8dp"
+                android:text="Bien sûr, je peux vous guider. Voulez-vous un blocage temporaire ou définitif ?"
+                android:textColor="#FFFFFF" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:background="#E8F7F2"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="8dp"
+                android:text="Je veux un blocage temporaire pendant 24h."
+                android:textColor="#111827" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:background="#0E6B5C"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="8dp"
+                android:text="C’est prêt. Votre carte sera bloquée jusqu’à 24h."
+                android:textColor="#FFFFFF" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="16dp"
+        android:background="#FFFFFF"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="12dp">
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:hint="Écrire un message"
+            android:textColor="#111827" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#0E6B5C"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:text="Envoyer"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+    </LinearLayout>
+</LinearLayout>
