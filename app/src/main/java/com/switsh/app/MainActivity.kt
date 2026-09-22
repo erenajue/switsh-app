@@ -3,7 +3,6 @@ package com.switsh.app
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.switsh.app.databinding.ActivityMainBinding
 
@@ -22,9 +21,11 @@ class MainActivity : AppCompatActivity() {
             tab.text = when (position) {
                 0 -> "Comptes"
                 1 -> "Carte"
-                2 -> "Transfert"
-                3 -> "Budget"
-                4 -> "Aide"
+                2 -> "Paiement"
+                3 -> "Virements"
+                4 -> "Cash in / Cash out"
+                5 -> "Budget"
+                6 -> "Aide"
                 else -> "Profil"
             }
         }.attach()
