@@ -1,75 +1,28 @@
 # Switsh Mobile App
 
-Switsh is a Kotlin Android prototype inspired by the interactive Switsh mobile banking experience. This project recreates the core UX flows of the product in a mobile app interface, with screens for account overview, card management, transfers, budgeting, support, and profile management.
+Switsh is a Kotlin Android prototype based on the interactive Switsh mobile experience. The current UI implements the language selection screen from the prototype's **Démarrage** section. It offers French, English, Lingála, Kikongo, Tshiluba, and Kiswahili, defaults to French, and saves the confirmed choice on the device.
 
-## Overview
+Other screens and navigation flows have not yet been implemented.
 
-This app is intentionally focused on UI/UX implementation rather than full backend connectivity. It demonstrates a polished, customer-facing banking experience in a mobile layout, designed to mirror the prototype available at the Switsh product demo.
+## Tech stack
 
-## Included Features
-
-- Nine-screen onboarding and KYC/AML flow, including identity, personal, address, and business verification
-- Account dashboard with balance summary
-- Card overview and controls
-- Payment/transfer flow
-- Monthly budget management
-- In-app support chat experience
-- User profile and settings
-- Material Design styling aligned with a fintech aesthetic
-
-## Project Structure
-
-```text
-switsh-app/
-├── app/
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/com/switsh/app/
-│   │   │   │   ├── MainActivity.kt
-│   │   │   │   ├── SwitshPagerAdapter.kt
-│   │   │   │   ├── DashboardFragment.kt
-│   │   │   │   ├── CardFragment.kt
-│   │   │   │   ├── TransferFragment.kt
-│   │   │   │   ├── BudgetFragment.kt
-│   │   │   │   ├── SupportFragment.kt
-│   │   │   │   └── ProfileFragment.kt
-│   │   │   └── res/
-│   │   │       ├── layout/
-│   │   │       ├── drawable/
-│   │   │       └── values/
-│   └── build.gradle.kts
-├── build.gradle.kts
-├── gradlew
-├── gradlew.bat
-├── settings.gradle.kts
-├── gradle.properties
-├── local.properties
-├── README.md
-├── RUNME.md
-└── .gitignore
-```
-
-## Tech Stack
-
-- Kotlin
-- Android SDK
-- Jetpack ViewPager2
-- AndroidX / Material Components
+- Kotlin and Android SDK
+- AndroidX AppCompat and View Binding
 - Gradle
-
-## Design Focus
-
-The app follows a clean fintech design language:
-
-- Green and white banking palette
-- Rounded cards and modern panels
-- Strong readability and spacing
-- Mobile-first interactions
-- Clear action buttons and segmented navigation
 
 ## Notes
 
-This is a front-end prototype intended for product design and UX validation. It does not include live banking integrations, authentication backends, or real transaction processing.
+This is a UI prototype. It does not include live banking integrations, authentication flows, or transaction processing.
+
+## Onboarding API client
+
+`com.switsh.clients.OnboardingApiClient` (Ktor + OkHttp + Gson) implements the operations described in
+`app/src/main/java/com/switsh/clients/onboarding-api.yml`.
+
+- A `tokenProvider: suspend () -> String` supplies a short-lived (≤ 7 min) bearer token for each request.
+- Requests use 10-second connect, request, and socket timeouts; HTTPS is enforced except for loopback hosts.
+- Writes send `X-Correlation-Id` and an `Idempotency-Key` (generated automatically unless supplied).
+- Non-2xx responses throw `OnboardingApiException` with the RFC 9457 `Problem` or legacy `error`.
 
 ## License
 

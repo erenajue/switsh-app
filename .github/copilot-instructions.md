@@ -1,6 +1,7 @@
 # Copilot instructions
 
 ## General 
+All UI experience is described on application prototype site => https://switsh-prototype.pplx.app/. All domain mentioned in specifications refer to the sections from this webpage
 
 ## Code writing
 - Use snakeCase instead of snake_case for variable now

@@ -1,0 +1,158 @@
+/* ===== Switsh — Design Tokens ===== */
+:root, [data-theme='light'] {
+  /* Surfaces */
+  --color-bg: #F4F7F6;
+  --color-surface: #FFFFFF;
+  --color-surface-2: #FBFCFB;
+  --color-surface-offset: #ECF2EF;
+  --color-surface-offset-2: #E3EBE7;
+  --color-border: #DCE6E1;
+  --color-divider: #E6EEEA;
+
+  /* Text */
+  --color-text: #0E1D18;
+  --color-text-muted: #566862;
+  --color-text-faint: #93A39D;
+  --color-text-inverse: #F5FAF8;
+
+  /* Primary — Switsh Teal */
+  --color-primary: #0B6E5C;
+  --color-primary-hover: #085A4B;
+  --color-primary-active: #06463B;
+  --color-primary-highlight: #D6ECE4;
+
+  /* Accent — Congo Gold */
+  --color-accent: #E1992F;
+  --color-accent-hover: #C57F1F;
+  --color-accent-highlight: #F7E5C4;
+
+  /* Semantic */
+  --color-success: #2E8B57;
+  --color-success-highlight: #DAEEDF;
+  --color-warning: #B9770E;
+  --color-warning-highlight: #F3E3C6;
+  --color-error: #C23B3B;
+  --color-error-highlight: #F5DBDA;
+  --color-notification: #C23B3B;
+
+  /* Currency accents */
+  --color-usd: #1F6FCB;
+  --color-usd-highlight: #DCE9F8;
+  --color-cdf: #0B6E5C;
+  --color-cdf-highlight: #D6ECE4;
+
+  --radius-sm: 0.4rem;
+  --radius-md: 0.7rem;
+  --radius-lg: 1.1rem;
+  --radius-xl: 1.5rem;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 1px 2px rgba(10, 30, 24, 0.06);
+  --shadow-md: 0 6px 20px rgba(10, 30, 24, 0.08);
+  --shadow-lg: 0 20px 48px rgba(10, 30, 24, 0.16);
+  --shadow-phone: 0 30px 70px rgba(6, 20, 16, 0.35);
+
+  --transition-interactive: 160ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  --font-display: 'Cabinet Grotesk', 'Segoe UI', sans-serif;
+  --font-body: 'Satoshi', 'Segoe UI', sans-serif;
+}
+
+[data-theme='dark'] {
+  --color-bg: #0A1512;
+  --color-surface: #101B17;
+  --color-surface-2: #14211C;
+  --color-surface-offset: #182720;
+  --color-surface-offset-2: #1D2E26;
+  --color-border: #223932;
+  --color-divider: #1B2A25;
+  --color-text: #E6F0EB;
+  --color-text-muted: #96A8A0;
+  --color-text-faint: #5C7069;
+  --color-text-inverse: #0A1512;
+
+  --color-primary: #46C7A4;
+  --color-primary-hover: #2EAE8B;
+  --color-primary-active: #239274;
+  --color-primary-highlight: #1B3831;
+
+  --color-accent: #F0B85C;
+  --color-accent-hover: #F5CB84;
+  --color-accent-highlight: #3B2E1A;
+
+  --color-success: #4CB57E;
+  --color-success-highlight: #1C3A29;
+  --color-warning: #E0A64A;
+  --color-warning-highlight: #3B2E17;
+  --color-error: #E27272;
+  --color-error-highlight: #3A1F1F;
+  --color-notification: #E27272;
+
+  --color-usd: #6AA9EA;
+  --color-usd-highlight: #1B2C40;
+  --color-cdf: #46C7A4;
+  --color-cdf-highlight: #1B3831;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.5);
+  --shadow-phone: 0 30px 70px rgba(0, 0, 0, 0.6);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --color-bg: #0A1512;
+    --color-surface: #101B17;
+    --color-surface-2: #14211C;
+    --color-surface-offset: #182720;
+    --color-surface-offset-2: #1D2E26;
+    --color-border: #223932;
+    --color-divider: #1B2A25;
+    --color-text: #E6F0EB;
+    --color-text-muted: #96A8A0;
+    --color-text-faint: #5C7069;
+    --color-text-inverse: #0A1512;
+    --color-primary: #46C7A4;
+    --color-primary-hover: #2EAE8B;
+    --color-primary-active: #239274;
+    --color-primary-highlight: #1B3831;
+    --color-accent: #F0B85C;
+    --color-accent-hover: #F5CB84;
+    --color-accent-highlight: #3B2E1A;
+    --color-success: #4CB57E;
+    --color-success-highlight: #1C3A29;
+    --color-warning: #E0A64A;
+    --color-warning-highlight: #3B2E17;
+    --color-error: #E27272;
+    --color-error-highlight: #3A1F1F;
+    --color-notification: #E27272;
+    --color-usd: #6AA9EA;
+    --color-usd-highlight: #1B2C40;
+    --color-cdf: #46C7A4;
+    --color-cdf-highlight: #1B3831;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.5);
+    --shadow-phone: 0 30px 70px rgba(0, 0, 0, 0.6);
+  }
+}
+
+:root {
+  --text-xs: clamp(0.72rem, 0.68rem + 0.2vw, 0.8rem);
+  --text-sm: clamp(0.82rem, 0.78rem + 0.2vw, 0.9rem);
+  --text-base: clamp(0.92rem, 0.88rem + 0.2vw, 1rem);
+  --text-lg: clamp(1.05rem, 1rem + 0.4vw, 1.2rem);
+  --text-xl: clamp(1.3rem, 1.15rem + 0.8vw, 1.7rem);
+  --text-2xl: clamp(1.7rem, 1.4rem + 1.4vw, 2.4rem);
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+}
