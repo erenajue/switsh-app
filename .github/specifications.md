@@ -586,6 +586,23 @@ Quality controls:
 | RBAC | Role-Based Access Control |
 | i18n / l10n | Internationalization / localization |
 
-## 12. Final statement
+## 12. Technical requirements
+
+| Requirement ID | Category | Specification | Priority | Acceptance Criteria |
+|----------------|----------|---------------|----------|---------------------|
+| REQ-001 | Persistence | All section data saved to encrypted local DB on completion | Critical | 0ms perceived latency for user, no network call blocking UI |
+| REQ-002 | Sync Strategy | Async background sync with exponential backoff per section | Critical | Retries start at 2s, max 32s interval, 5 attempts before alert |
+| REQ-003 | Atomic Commit | Final section triggers batched transaction endpoint | Critical | All 9 sections submitted in single POST, atomic rollback on failure |
+| REQ-004 | Encryption | AES-256-GCM for local storage, TLS 1.3+ for transit | Critical | NIST-approved algorithms, keys stored in secure enclave |
+| REQ-005 | Resume Capability | Detect prior session, load from local storage, skip synced sections | High | User returns within 30 days, resumes at last unsynced section |
+| REQ-006 | Validation | Client-side schema validation before local save | High | Invalid data rejected before persistence, clear error messages |
+| REQ-007 | Idempotency | Sync jobs tagged with unique operation IDs to prevent duplicates | High | Network retry does not create duplicate records |
+| REQ-008 | Conflict Resolution | Server-authoritative, client updates on successful sync | Medium | Version vector or timestamp-based merge strategy |
+| REQ-009 | Telemetry | Track section completion, sync success/failure, drop-off points | Medium | Privacy-compliant analytics, opt-in only |
+| REQ-010 | Offline Mode | Full 9-section flow functional with zero connectivity | Critical | Queue grows indefinitely, sync resumes when online |
+| REQ-011 | Cleanup | Auto-delete synced + committed data after 7 days post-submission | Medium | GDPR/local regulation compliant data retention |
+| REQ-012 | Rate Limiting | Sync queue respects backend rate limits via token bucket | High | Max 3 concurrent sync requests, throttling on 429 responses |
+
+## 13. Final statement
 
 The Switsh platform is a regulated mobile financial ecosystem designed for the DRC, combining onboarding, banking, cards, payments, PFM, support, compliance, and multilingual operations under a strong governance model. The requirements captured in this specification define the product intent, core business rules, operational controls, and regulatory obligations required to deliver a compliant and scalable solution.

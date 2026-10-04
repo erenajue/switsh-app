@@ -18,16 +18,17 @@ class MainActivity : AppCompatActivity() {
         binding.viewPager.adapter = SwitshPagerAdapter(this)
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-            tab.text = when (position) {
-                0 -> "Comptes"
-                1 -> "Carte"
-                2 -> "Paiement"
-                3 -> "Virements"
-                4 -> "Cash in / Cash out"
-                5 -> "Budget"
-                6 -> "Aide"
-                else -> "Profil"
-            }
+            tab.text = listOf(
+                "Onboarding & KYC",
+                "Comptes",
+                "Carte",
+                "Paiement",
+                "Virements",
+                "Cash in / Cash out",
+                "Budget",
+                "Aide",
+                "Profil",
+            )[position]
         }.attach()
 
         binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {

@@ -8,6 +8,7 @@ This app is intentionally focused on UI/UX implementation rather than full backe
 
 ## Included Features
 
+- Nine-screen onboarding and KYC/AML flow, including identity, personal, address, and business verification
 - Account dashboard with balance summary
 - Card overview and controls
 - Payment/transfer flow
@@ -73,3 +74,13 @@ This is a front-end prototype intended for product design and UX validation. It 
 ## License
 
 This project is provided as a prototype for educational and design demonstration purposes.
+
+## Onboarding API client
+
+`com.switsh.clients.OnboardingApiClient` (Ktor + OkHttp + Gson) implements every operation of
+`app/src/main/java/com/switsh/clients/onboarding-api.yml`.
+
+- Constructed with a `tokenProvider: suspend () -> String`, called on every request (tokens are short-lived, ≤ 7 min) and sent as `Authorization: Bearer`.
+- 10 s connect/request/socket timeouts; HTTPS enforced (HTTP only for loopback hosts).
+- Writes send `X-Correlation-Id`; application endpoints also send `Idempotency-Key` (auto-generated UUIDs unless supplied).
+- Non-2xx responses throw `OnboardingApiException` carrying the RFC 9457 `Problem` or legacy `error`.

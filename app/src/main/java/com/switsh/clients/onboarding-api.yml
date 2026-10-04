@@ -1,0 +1,828 @@
+openapi: 3.0.3
+info:
+  title: Onboarding & KYC/AML Backend API
+  description: >-
+    Onboarding and KYC/AML microservice covering the application lifecycle
+    (internal/api, /v1/applications) and the legacy 9-step onboarding wizard
+    (internal/onboarding, /v1/onboardings). Both route sets are served by the
+    same process (cmd/server/main.go).
+  version: "1.0.0"
+servers:
+  - url: http://localhost:8080
+
+tags:
+  - name: applications
+    description: Application lifecycle, contacts, profile, and evidence (internal/api)
+  - name: onboardings
+    description: Legacy 9-step onboarding wizard (internal/onboarding)
+
+paths:
+  /v1/applications:
+    post:
+      tags: [applications]
+      summary: Register a new application
+      operationId: registerApplication
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CorrelationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Application created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationView'
+        '200':
+          description: Idempotent replay of a previous registration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationView'
+        '400':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        '429':
+          $ref: '#/components/responses/Problem'
+
+  /v1/applications/{applicationId}:
+    get:
+      tags: [applications]
+      summary: Get an application
+      operationId: getApplication
+      parameters:
+        - $ref: '#/components/parameters/ApplicationId'
+        - $ref: '#/components/parameters/CorrelationId'
+      responses:
+        '200':
+          description: Application state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationView'
+        '404':
+          $ref: '#/components/responses/Problem'
+
+  /v1/applications/{applicationId}/contacts/{contactType}/challenges:
+    post:
+      tags: [applications]
+      summary: Issue an OTP/email challenge for a contact
+      operationId: issueContactChallenge
+      parameters:
+        - $ref: '#/components/parameters/ApplicationId'
+        - $ref: '#/components/parameters/ContactType'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CorrelationId'
+      responses:
+        '202':
+          description: Challenge issued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChallengeView'
+        '200':
+          description: Idempotent replay
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChallengeView'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        '429':
+          $ref: '#/components/responses/Problem'
+
+  /v1/applications/{applicationId}/contacts/{contactType}/verify:
+    post:
+      tags: [applications]
+      summary: Verify a contact challenge
+      operationId: verifyContact
+      parameters:
+        - $ref: '#/components/parameters/ApplicationId'
+        - $ref: '#/components/parameters/ContactType'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CorrelationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyContactRequest'
+      responses:
+        '200':
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactResultView'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+
+  /v1/applications/{applicationId}/profile-selection:
+    put:
+      tags: [applications]
+      summary: Select customer type and tax residence
+      operationId: selectProfile
+      parameters:
+        - $ref: '#/components/parameters/ApplicationId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CorrelationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileSelectionRequest'
+      responses:
+        '200':
+          description: Profile selection saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationView'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+
+  /v1/applications/{applicationId}/documents/upload-sessions:
+    post:
+      tags: [applications]
+      summary: Create a constrained upload session for evidence
+      operationId: createUploadSession
+      parameters:
+        - $ref: '#/components/parameters/ApplicationId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CorrelationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadSessionRequest'
+      responses:
+        '201':
+          description: Upload session created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadSessionView'
+        '200':
+          description: Idempotent replay
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadSessionView'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+
+  /v1/applications/{applicationId}/identity-documents:
+    post:
+      tags: [applications]
+      summary: Attach an identity document for verification
+      operationId: attachIdentityDocument
+      parameters:
+        - $ref: '#/components/parameters/ApplicationId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CorrelationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdentityDocumentRequest'
+      responses:
+        '202':
+          description: Document accepted for processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentView'
+        '200':
+          description: Idempotent replay
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentView'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+
+  /v1/applications/{applicationId}/personal-profile:
+    put:
+      tags: [applications]
+      summary: Save the personal profile for an individual applicant
+      operationId: savePersonalProfile
+      parameters:
+        - $ref: '#/components/parameters/ApplicationId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CorrelationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonalProfileRequest'
+      responses:
+        '200':
+          description: Personal profile saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileView'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+
+  /v1/applications/{applicationId}/withdraw:
+    post:
+      tags: [applications]
+      summary: Withdraw an application
+      operationId: withdrawApplication
+      parameters:
+        - $ref: '#/components/parameters/ApplicationId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CorrelationId'
+      responses:
+        '200':
+          description: Application withdrawn
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationView'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+
+  /v1/applications/{applicationId}/submit:
+    post:
+      tags: [applications]
+      summary: Submit an individual application for automated checks
+      description: >-
+        Closes evidence intake and applies the outcome already recorded on the
+        document/liveness attempts. A failed attempt rejects the application; a
+        passed or review-required attempt opens a manual-review case, since AML
+        screening is not yet implemented and no result may bypass it into an
+        approval. Business applications are rejected as unsupported this
+        increment.
+      operationId: submitApplication
+      parameters:
+        - $ref: '#/components/parameters/ApplicationId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CorrelationId'
+      responses:
+        '200':
+          description: Application moved to REJECTED or MANUAL_REVIEW
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationView'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          description: Conflict — wrong state, or document verification still processing
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+
+  /v1/onboardings:
+    post:
+      tags: [onboardings]
+      summary: Create an onboarding record (legacy wizard)
+      operationId: createOnboarding
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOnboardingRequest'
+      responses:
+        '201':
+          description: Onboarding created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingRecord'
+        '400':
+          $ref: '#/components/responses/LegacyError'
+        '405':
+          $ref: '#/components/responses/LegacyError'
+        '500':
+          $ref: '#/components/responses/LegacyError'
+
+  /v1/onboardings/{id}:
+    get:
+      tags: [onboardings]
+      summary: Get an onboarding record
+      operationId: getOnboarding
+      parameters:
+        - $ref: '#/components/parameters/OnboardingId'
+      responses:
+        '200':
+          description: Onboarding record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingRecord'
+        '404':
+          $ref: '#/components/responses/LegacyError'
+
+  /v1/onboardings/{id}/verification-status:
+    get:
+      tags: [onboardings]
+      summary: Get onboarding verification status
+      operationId: getOnboardingVerificationStatus
+      parameters:
+        - $ref: '#/components/parameters/OnboardingId'
+      responses:
+        '200':
+          description: Verification status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingVerificationStatus'
+        '404':
+          $ref: '#/components/responses/LegacyError'
+
+  /v1/onboardings/{id}/sections/{sectionSlug}:
+    patch:
+      tags: [onboardings]
+      summary: Submit data for one onboarding section
+      operationId: completeOnboardingSection
+      parameters:
+        - $ref: '#/components/parameters/OnboardingId'
+        - name: sectionSlug
+          in: path
+          required: true
+          description: >-
+            One of: inscription, informations-personnelles, coordonnees,
+            informations-entreprise, documents-legaux,
+            informations-mobile-money, representant-legal, validation,
+            statut-de-verification.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: Section saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingRecord'
+        '400':
+          $ref: '#/components/responses/LegacyError'
+        '404':
+          $ref: '#/components/responses/LegacyError'
+
+components:
+  parameters:
+    ApplicationId:
+      name: applicationId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    ContactType:
+      name: contactType
+      in: path
+      required: true
+      schema:
+        type: string
+        enum: [PHONE, EMAIL]
+    OnboardingId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: Required on every write endpoint; resolves replay vs. conflict.
+      schema:
+        type: string
+        maxLength: 200
+    CorrelationId:
+      name: X-Correlation-Id
+      in: header
+      required: false
+      schema:
+        type: string
+
+  responses:
+    Problem:
+      description: RFC 9457 problem document
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    LegacyError:
+      description: Legacy onboarding error body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/LegacyErrorBody'
+
+  schemas:
+    Problem:
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        code:
+          type: string
+        correlationId:
+          type: string
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/FieldError'
+
+    FieldError:
+      type: object
+      properties:
+        field:
+          type: string
+        code:
+          type: string
+
+    LegacyErrorBody:
+      type: object
+      properties:
+        error:
+          type: string
+
+    TermsRequest:
+      type: object
+      required: [termsVersion, privacyPolicyVersion, accepted]
+      properties:
+        termsVersion:
+          type: string
+        privacyPolicyVersion:
+          type: string
+        accepted:
+          type: boolean
+
+    RegisterRequest:
+      type: object
+      required: [phoneNumber, email, locale, terms]
+      properties:
+        phoneNumber:
+          type: string
+          example: "+243999999999"
+        email:
+          type: string
+          format: email
+        locale:
+          type: string
+          example: fr-CD
+        terms:
+          $ref: '#/components/schemas/TermsRequest'
+        credentialReference:
+          type: string
+          description: Opaque reference to credential setup; never a password.
+
+    VerifyContactRequest:
+      type: object
+      properties:
+        code:
+          type: string
+        token:
+          type: string
+      description: Exactly one of code (SMS OTP) or token (email link) is supplied.
+
+    ProfileSelectionRequest:
+      type: object
+      required: [customerType, taxResidence]
+      properties:
+        customerType:
+          type: string
+          enum: [INDIVIDUAL, BUSINESS]
+        taxResidence:
+          type: string
+
+    UploadSessionRequest:
+      type: object
+      required: [purpose, contentType]
+      properties:
+        purpose:
+          type: string
+        contentType:
+          type: string
+          example: image/jpeg
+
+    IdentityDocumentRequest:
+      type: object
+      required: [documentType, documentNumber, issuingCountry, issueDate, expiryDate, frontUploadId]
+      properties:
+        documentType:
+          type: string
+          enum: [CENI, ONIP_NIN, BIOMETRIC_PASSPORT, RESIDENCE_PERMIT]
+        documentNumber:
+          type: string
+        issuingCountry:
+          type: string
+        issueDate:
+          type: string
+          format: date
+        expiryDate:
+          type: string
+          format: date
+        frontUploadId:
+          type: string
+          format: uuid
+        backUploadId:
+          type: string
+          format: uuid
+        selfieUploadId:
+          type: string
+          format: uuid
+
+    PersonalProfileRequest:
+      type: object
+      required:
+        - surname
+        - givenNames
+        - dateOfBirth
+        - placeOfBirth
+        - sex
+        - nationality
+        - address
+        - cityOrCommune
+        - occupation
+        - sourceOfFunds
+      properties:
+        surname:
+          type: string
+        givenNames:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        placeOfBirth:
+          type: string
+        sex:
+          type: string
+          enum: [F, M, X]
+        nationality:
+          type: string
+        address:
+          type: string
+        cityOrCommune:
+          type: string
+        occupation:
+          type: string
+        sourceOfFunds:
+          type: string
+          enum: [SALARY, BUSINESS_INCOME, SAVINGS, REMITTANCE, PENSION, OTHER]
+        incomeBand:
+          type: string
+          enum: [BAND_0_200K, BAND_200K_1M, BAND_1M_5M, BAND_5M_PLUS]
+
+    NextAction:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+
+    ContactStatusView:
+      type: object
+      properties:
+        phone:
+          $ref: '#/components/schemas/VerificationStatus'
+        email:
+          $ref: '#/components/schemas/VerificationStatus'
+
+    ApplicationView:
+      type: object
+      properties:
+        applicationId:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          format: int64
+        state:
+          $ref: '#/components/schemas/ApplicationState'
+        complianceStatus:
+          $ref: '#/components/schemas/ComplianceStatus'
+        customerType:
+          type: string
+          enum: [INDIVIDUAL, BUSINESS]
+        taxResidence:
+          type: string
+        kycTier:
+          type: string
+          enum: [TIER_1, TIER_2, TIER_3]
+        contacts:
+          $ref: '#/components/schemas/ContactStatusView'
+        nextActions:
+          type: array
+          items:
+            $ref: '#/components/schemas/NextAction'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ChallengeView:
+      type: object
+      properties:
+        applicationId:
+          type: string
+          format: uuid
+        contactType:
+          type: string
+          enum: [PHONE, EMAIL]
+        expiresAt:
+          type: string
+          format: date-time
+        maxAttempts:
+          type: integer
+        resendAllowedAt:
+          type: string
+          format: date-time
+        delivery:
+          type: string
+
+    ContactResultView:
+      type: object
+      properties:
+        applicationId:
+          type: string
+          format: uuid
+        contactType:
+          type: string
+          enum: [PHONE, EMAIL]
+        status:
+          $ref: '#/components/schemas/VerificationStatus'
+        attemptsRemaining:
+          type: integer
+        contacts:
+          $ref: '#/components/schemas/ContactStatusView'
+        state:
+          $ref: '#/components/schemas/ApplicationState'
+
+    UploadSessionView:
+      type: object
+      properties:
+        uploadSessionId:
+          type: string
+          format: uuid
+        objectKey:
+          type: string
+        uploadUrl:
+          type: string
+        maxBytes:
+          type: integer
+          format: int64
+        allowedMimeTypes:
+          type: array
+          items:
+            type: string
+        expiresAt:
+          type: string
+          format: date-time
+
+    DocumentView:
+      type: object
+      properties:
+        documentId:
+          type: string
+          format: uuid
+        attemptId:
+          type: string
+          format: uuid
+        documentType:
+          type: string
+          enum: [CENI, ONIP_NIN, BIOMETRIC_PASSPORT, RESIDENCE_PERMIT]
+        status:
+          $ref: '#/components/schemas/VerificationStatus'
+        state:
+          $ref: '#/components/schemas/ApplicationState'
+
+    ProfileView:
+      type: object
+      properties:
+        applicationId:
+          type: string
+          format: uuid
+        state:
+          $ref: '#/components/schemas/ApplicationState'
+        complete:
+          type: boolean
+        updatedAt:
+          type: string
+          format: date-time
+
+    VerificationStatus:
+      type: string
+      enum:
+        - NOT_STARTED
+        - PENDING
+        - PROCESSING
+        - PASSED
+        - FAILED
+        - REVIEW_REQUIRED
+        - EXPIRED
+        - CANCELLED
+
+    ComplianceStatus:
+      type: string
+      enum:
+        - PENDING
+        - REVIEW_REQUIRED
+        - VERIFIED
+        - SUSPENDED
+        - REJECTED
+        - EXPIRED
+        - WITHDRAWN
+
+    ApplicationState:
+      type: string
+      enum:
+        - DRAFT
+        - CONTACT_PENDING
+        - CONTACT_VERIFIED
+        - PROFILE_SELECTED
+        - EVIDENCE_IN_PROGRESS
+        - AUTOMATED_CHECKS
+        - MANUAL_REVIEW
+        - INFORMATION_REQUESTED
+        - APPROVED
+        - REASSESSMENT_REQUIRED
+        - SUSPENDED
+        - REJECTED
+        - EXPIRED
+        - WITHDRAWN
+
+    CreateOnboardingRequest:
+      type: object
+      properties:
+        client_id:
+          type: string
+
+    OnboardingRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        client_id:
+          type: string
+        status:
+          type: string
+        completed_sections:
+          type: array
+          items:
+            type: string
+
+    OnboardingVerificationStatus:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+        completed_sections:
+          type: array
+          items:
+            type: string
+        verification_completed:
+          type: boolean
