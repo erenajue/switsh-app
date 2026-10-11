@@ -2,12 +2,27 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="surface_background">#FFF4F7F6</color>
-    <color name="surface_card">#FFFFFFFF</color>
-    <color name="switsh_teal">#FF0B6E5C</color>
-    <color name="switsh_teal_light">#FFD6ECE4</color>
-    <color name="text_primary">#FF0E1D18</color>
-    <color name="text_secondary">#FF566862</color>
-    <color name="text_faint">#FF93A39D</color>
-    <color name="border">#FFB7C9C1</color>
+    <color name="primary">#0B6E5C</color>
+    <color name="primary_active">#06463B</color>
+    <color name="primary_highlight">#E6F2F0</color>
+    <color name="accent_highlight">#FFF3E0</color>
+    <color name="accent_hover">#FF9800</color>
+    <color name="bg">#F5F7FA</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_offset">#F0F4F8</color>
+    <color name="surface_offset2">#E2E8F0</color>
+    <color name="card_dark">#06463B</color>
+    <color name="divider">#E2E8F0</color>
+    <color name="border">#CBD5E1</color>
+    <color name="text">#0F172A</color>
+    <color name="text_muted">#64748B</color>
+    <color name="text_faint">#94A3B8</color>
+    <color name="success">#10B981</color>
+    <color name="success_highlight">#D1FAE5</color>
+    <color name="warning">#F59E0B</color>
+    <color name="warning_highlight">#FEF3C7</color>
+    <color name="error">#EF4444</color>
+    <color name="error_highlight">#FEE2E2</color>
+    <color name="usd">#0284C7</color>
+    <color name="usd_highlight">#E0F2FE</color>
 </resources>

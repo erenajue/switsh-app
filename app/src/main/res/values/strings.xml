@@ -2,10 +2,15 @@
     <string name="app_name">switsh-app</string>
     <string name="splash_wordmark">Switsh</string>
     <string name="splash_tagline">Votre banque mobile bidevise USD/CDF</string>
-    <string name="language_title">Choisissez votre langue</string>
-    <string name="language_subtitle">Sélectionnez la langue de l’application. Vous pourrez la modifier à tout moment.</string>
-    <string name="continue_button">Continuer</string>
-    <string name="language_saved">Langue enregistrée</string>
-    <string name="language_option">%1$s, non sélectionné</string>
-    <string name="language_option_selected">%1$s, sélectionné</string>
+    <string name="back">Retour</string>
+    <string name="coming_soon">Bientôt disponible</string>
+    <string name="saved_example">Enregistré</string>
+    <string name="code_resent">Code renvoyé</string>
+    <string name="example_only">Fonctionnalité de démonstration</string>
+    <string name="tab_accounts">Comptes</string>
+    <string name="tab_cards">Cartes</string>
+    <string name="tab_payments">Paiements</string>
+    <string name="tab_pfm">Budget</string>
+    <string name="tab_more">Plus</string>
+    <string name="file_added_example">Fichier ajouté</string>
 </resources>

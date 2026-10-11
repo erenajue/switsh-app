@@ -1,0 +1,6 @@
+{
+  "name": "prototype-converter",
+  "private": true,
+  "description": "Converts prototype/js screen definitions into app/src/main/assets/screens.json and icon vector drawables. Run: npm i && node convert.js",
+  "dependencies": { "linkedom": "^0.18.0" }
+}

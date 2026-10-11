@@ -4,6 +4,10 @@ function esc(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
+function L(key, fallback) {
+  return typeof LABEL_KEYS !== 'undefined' && LABEL_KEYS ? `{{${key}}}` : fallback;
+}
+
 /* Field descriptor factory — one object powers both the mobile UI input AND the BRD spec table row. */
 function F(opts) {
   return Object.assign({
@@ -52,7 +56,7 @@ function renderField(f) {
       break;
     }
     case 'file':
-      control = `<div class="upload-box ${f.done ? 'done' : ''}">${ICONS[f.icon || 'upload']}<strong>${esc(f.placeholder || 'Ajouter un fichier')}</strong><span>${esc(f.hint || 'JPG, PNG ou PDF · 10 Mo max')}</span></div>`;
+      control = `<div class="upload-box ${f.done ? 'done' : ''}">${ICONS[f.icon || 'upload']}<strong>${esc(f.placeholder || L('common.add_file', 'Ajouter un fichier'))}</strong><span>${esc(f.hint || L('common.file_formats', 'JPG, PNG ou PDF · 10 Mo max'))}</span></div>`;
       hint && (control += '');
       break;
     case 'toggle':

@@ -1,8 +1,8 @@
 # Switsh Mobile App
 
-Switsh is a Kotlin Android prototype based on the interactive Switsh mobile experience. The current UI implements the language selection screen from the prototype's **Démarrage** section. It offers French, English, Lingála, Kikongo, Tshiluba, and Kiswahili, defaults to French, and saves the confirmed choice on the device.
+Switsh is a Kotlin Android prototype based on the interactive Switsh mobile experience. The current UI implements the launch screen from the prototype's **Démarrage** section: a teal gradient, Switsh brand mark, USD/CDF banking tagline, and three launch progress indicators.
 
-Other screens and navigation flows have not yet been implemented.
+The app is being rebuilt from this starting point. Other screens and navigation flows have not yet been implemented.
 
 ## Tech stack
 

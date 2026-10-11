@@ -1,10 +1,23 @@
 # Copilot instructions
 
 ## General 
-All UI experience is described on application prototype site => https://switsh-prototype.pplx.app/. All domain mentioned in specifications refer to the sections from this webpage
+All UI experience is described on application prototype directory "prototype"
 
 ## Code writing
+
+### Split into separate files:
+- Any large class, or one with real logic (a ViewModel, repository, service, or Activity/Fragment). Each gets its own file named after it.
+- Unrelated classes that just happen to be used in the same screen or feature.
+- Anything that grows past a few hundred lines, where finding things starts to get tedious.
+- Public types that other modules or features depend on, so they are easy to find by name.
+
+### Naming:
+
+- A file with a single class is named after that class (UserRepository.kt).
+- A file with several declarations gets a descriptive UpperCamelCase name for its contents, such as UserModels.kt or NetworkErrors.kt.
 - Use snakeCase instead of snake_case for variable now
+
+### Technical stack
 - Use SQL lite as internal database
 - Use Ktor as REST client library
   - Consider adding 10 seconds timeouts

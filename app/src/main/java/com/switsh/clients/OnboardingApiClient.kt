@@ -1,5 +1,6 @@
 package com.switsh.clients
 
+import com.switsh.app.domains.onboarding.*
 import com.google.gson.Gson
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig

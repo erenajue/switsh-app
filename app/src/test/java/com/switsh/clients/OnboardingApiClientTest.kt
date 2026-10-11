@@ -1,5 +1,6 @@
 package com.switsh.clients
 
+import com.switsh.app.domains.onboarding.*
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.request.HttpRequestData
