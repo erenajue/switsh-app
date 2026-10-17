@@ -11,7 +11,7 @@ never run. The `lazy` delegate stayed `null`, and the first `find()` call threw 
 **Fix:** `find()` searches `screens` directly (`screens.firstOrNull { it.id == id }`).
 
 **Rules for classes parsed by Gson (`model/ScreenModels.kt`):**
-- Keep them plain data holders: no `lazy`, no initialised private properties, no `init` blocks.
+- Keep them plain data holders: no `lazy`, no initialized private properties, no `init` blocks.
 - Put derived or cached data in a separate object built after parsing, for example in `ScreenRepository`.
 - Give every optional JSON field a default value in the constructor, which Gson ignores, and treat it as nullable.
 - Missing JSON fields arrive as `null` even for non-null Kotlin types, so declare them nullable.

@@ -15,6 +15,7 @@ function fieldBlock(el){
   const k=kids(el);const label=k.find(x=>tag(x)==='LABEL');
   const hint=k.find(x=>has(x,'hint'));
   const b={t:'field',hint:hint&&txt(hint)};
+  b.fieldId = (el.querySelector('input,textarea')||el).getAttribute('data-field') || undefined;
   if(label){b.label=own(label);const sp=[...label.querySelectorAll('span')];
     const s=sp.map(x=>txt(x)).join(' ');
     b.required=sp.some(x=>has(x,'req'))?'yes':/LECTURE/.test(s)?'ro':/SI APPLICABLE/.test(s)?'cond':'no';}
@@ -70,7 +71,7 @@ function blockOf(el,ctx){
   if(has(el,'block-sub'))return{t:'subtitle',text:txt(el)};
   if(has(el,'section-label'))return{t:'section',text:txt(el)};
   if(has(el,'field'))return fieldBlock(el);
-  if(has(el,'checkline'))return{t:'check',text:txt(el),checked:has(el,'checked')};
+  if(has(el,'checkline'))return{t:'check',text:txt(el),fieldId:el.getAttribute('data-field')||undefined,checked:has(el,'checked')};
   if(has(el,'notice-box'))return notice(el);
   if(has(el,'card')){const k=kids(el);
     if(k.some(x=>has(x,'avatar')||has(x,'icon')))return{t:'card',children:[rowCard(el)]};
@@ -122,7 +123,7 @@ for(const s of SCREENS){
   out.push(clean(sc));
 }
 
-const NEXT={'onb-inscription':'onb-otp','onb-otp':'onb-auth-security','onb-auth-security':'onb-profile-select','onb-profile-select':'onb-id-particulier','onb-id-particulier':'onb-infos-perso','onb-infos-perso':'onb-justif-domicile','onb-justif-domicile':'onb-status','onb-kyb':'onb-status','onb-status':'bank-accounts','start-language':'onb-inscription'};
+const NEXT={'onb-inscription':'onb-otp','onb-otp':'onb-auth-security','onb-auth-security':'onb-profile-select','onb-profile-select':'onb-id-particulier','onb-id-particulier':'onb-infos-perso','onb-infos-perso':'onb-justif-domicile','onb-justif-domicile':'onb-status','onb-kyb':'onb-status','onb-status':'bank-accounts','start-language':'onb-inscription','start-offline':'start-splash'};
 const QUICK={'Envoyer':'pay-p2p','Convertir':'pay-converter','Payer QR':'pay-merchant','Sous-compte':'bank-subaccount'};
 const ROWS={'Langue':'settings-language','Sécurité & authentification':'onb-auth-security','Aide & support':'support-chatbot','Mireille Kabuya':'onb-status'};
 const link=(icon,title,to,sub)=>({t:'row',icon,title,sub,trailing:{kind:'chevron'},to});

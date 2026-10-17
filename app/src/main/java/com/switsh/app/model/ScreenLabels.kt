@@ -3,6 +3,9 @@ package com.switsh.app.model
 import java.util.Locale
 
 object ScreenLabels {
+    // ✅ FIXED (Escaped hyphen)
+    private val LABEL_PATTERN = Regex("""\{\{([a-z0-9_.-]+)\}\}""")
+
     private val languageIndexes = mapOf("fr" to 0, "en" to 1, "ln" to 2, "kg" to 3, "lua" to 4, "sw" to 5)
 
     private val labels = mapOf(
@@ -11,7 +14,16 @@ object ScreenLabels {
         "common.continue" to listOf("Continuer", "Continue", "Koba liboso", "Kwendila", "Tshidiya", "Endelea"),
         "common.file_added" to listOf("Fichier ajouté", "File added", "Fisyé ebakisami", "Fisyé kibakulu", "Tshintu tshibakishibua", "Faili limeongezwa"),
         "common.file_formats" to listOf("JPG, PNG ou PDF · 10 Mo max", "JPG, PNG or PDF · 10 MB max", "JPG, PNG to PDF · 10 MB koleka te", "JPG, PNG to PDF · 10 MB ve", "JPG, PNG anyi PDF · 10 MB pabuipi", "JPG, PNG au PDF · MB 10 upeo"),
+        "common.please_wait" to listOf("Veuillez patienter…", "Please wait…", "Zela moke…", "Tala fioti…", "Lindila bulelela…", "Tafadhali subiri…"),
+        "common.retry" to listOf("Réessayer", "Retry", "Meka lisusu", "Ngeka diaka", "Meka kabidi", "Jaribu tena"),
         "common.verified" to listOf("Vérifié", "Verified", "Endimisami", "Ndimisama", "Tshikididi", "Imethibitishwa"),
+        "onb.error.email_invalid" to listOf("Veuillez saisir une adresse e-mail valide.", "Please enter a valid email address.", "Komá adrɛsi ya imɛlɛ ya solo.", "Sonika adrɛsi ya imɛlɛ ya kieleka.", "Tshina adrɛsi wa imayili wa kieleka.", "Weka anwani halali ya barua pepe."),
+        "onb.error.phone_invalid" to listOf("Veuillez saisir les 9 chiffres du numéro RDC.", "Please enter the 9 digits of the DRC phone number.", "Komá banimero 9 ya telefone ya RDC.", "Sonika banimero 9 ya telefone ya RDC.", "Tshina banimero 9 wa telefone wa RDC.", "Weka tarakimu 9 za nambari ya simu ya DRC."),
+        "onb.error.terms_required" to listOf("Veuillez accepter les conditions pour continuer.", "Please accept the terms to continue.", "Ndima mibeko mpo na kokoba.", "Ndima nsiku mu kukwendila.", "Ndima mikenji bua kuenda kumpala.", "Kubali masharti ili kuendelea."),
+        "onb.network.required.title" to listOf("Une connexion Internet active est nécessaire pour continuer.", "An active internet connection is required to continue.", "Esengeli ozala na Internet mpo na kokoba.", "Internet ya kusala kele nsadisa mu kukwendila.", "Internet wa mudimu udi bilele bua kuenda kumpala.", "Muunganisho wa intaneti unaohitajika ili kuendelea."),
+        "onb.network.required.message" to listOf("Connectez-vous à Internet, puis réessayez.", "Connect to the internet, then try again.", "Kangisa na Internet, mpe meka lisusu.", "Kangisa na Internet, ngeka diaka.", "Kanganya ku Internet, meka kabidi.", "Unganisha intaneti, kisha ujaribu tena."),
+        "onb.registration.unavailable.title" to listOf("Inscription indisponible pour le moment", "Registration is temporarily unavailable", "Komikoma ezali te sikoyo", "Kusonika kele ve ntangu yayi", "Kusungula kudi kuimanyika pa tshikondo etshi", "Usajili haupatikani kwa sasa"),
+        "onb.registration.unavailable.message" to listOf("Veuillez réessayer plus tard.", "Please try again later.", "Meka lisusu na nsima.", "Ngeka diaka na nima.", "Meka kabidi kumpala.", "Tafadhali jaribu tena baadaye."),
         "onb.address_proof.age_hint" to listOf("Ancienneté maximale recommandée : 3 mois", "Recommended maximum age: 3 months", "Esengeli ezala ya sanza misato te koleka", "Lutangu lua nsungi lusungidilu: nsungi isatu", "Tshisungu tshia kubika: myeji isatu", "Isizidi miezi 3 tangu ilipotolewa"),
         "onb.address_proof.alternative" to listOf("Alternative si aucun document disponible", "Alternative if no document is available", "Nzela mosusu soki mokanda ezali te", "Nzela ya nkaka kana mukanda ke ve", "Nshila mukua kana mukanda udi kabidi to", "Njia mbadala ikiwa hakuna hati"),
         "onb.address_proof.geolocation" to listOf("Géolocalisation certifiée", "Verified geolocation", "Esika endimisami na GPS", "Kisika kiendimisama na GPS", "Mushindu wa GPS udi mudimu", "Mahali palipothibitishwa kwa GPS"),
@@ -150,7 +162,7 @@ object ScreenLabels {
         if (text == null) return null
         val index = languageIndexes[languageCode.lowercase(Locale.ROOT)] ?: 0
         return LABEL_PATTERN.replace(text) { match ->
-            labels[match.groupValues[1]]?.get(index) ?: match.value
+            labels[match.groupValues[1]]?.getOrNull(index) ?: match.value
         }
     }
 
@@ -190,6 +202,4 @@ object ScreenLabels {
         },
         trailing = block.trailing?.copy(text = resolve(block.trailing.text, languageCode)),
     )
-
-    private val LABEL_PATTERN = Regex("""\{\{([a-z0-9_.-]+)}}""")
 }

@@ -54,6 +54,7 @@ data class Block(
     val required: String? = null,
     val ui: String? = null,
     val prefix: String? = null,
+    val fieldId: String? = null,
     val placeholder: String? = null,
     val hint: String? = null,
     val options: List<String>? = null,

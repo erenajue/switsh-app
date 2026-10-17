@@ -61,6 +61,21 @@ SCREENS.push({
 });
 
 SCREENS.push({
+  id: 'start-offline',
+  group: 'start',
+  title: L('onb.network.required.title', 'Une connexion Internet active est nécessaire pour continuer.'),
+  subtitle: '',
+  chrome: 'auth',
+  body: () => `
+    <h1 class="block-title">${L('onb.network.required.title', 'Une connexion Internet active est nécessaire pour continuer.')}</h1>
+    <p class="block-sub">${L('onb.network.required.message', 'Connectez-vous à Internet, puis réessayez.')}</p>
+    <div class="sticky-cta">
+      <button class="btn btn-primary" data-to="start-splash">${L('common.retry', 'Réessayer')}</button>
+    </div>
+  `,
+});
+
+SCREENS.push({
   id: 'start-unlock',
   group: 'start',
   title: 'Déverrouillage — PIN & biométrie',

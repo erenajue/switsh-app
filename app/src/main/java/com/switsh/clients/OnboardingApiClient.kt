@@ -1,7 +1,25 @@
 package com.switsh.clients
 
-import com.switsh.app.domains.onboarding.*
 import com.google.gson.Gson
+import com.switsh.app.domains.onboarding.ApplicationView
+import com.switsh.app.domains.onboarding.ChallengeView
+import com.switsh.app.domains.onboarding.ContactResultView
+import com.switsh.app.domains.onboarding.ContactType
+import com.switsh.app.domains.onboarding.CreateOnboardingRequest
+import com.switsh.app.domains.onboarding.DocumentView
+import com.switsh.app.domains.onboarding.IdentityDocumentRequest
+import com.switsh.app.domains.onboarding.OnboardingApiException
+import com.switsh.app.domains.onboarding.OnboardingRecord
+import com.switsh.app.domains.onboarding.OnboardingVerificationStatus
+import com.switsh.app.domains.onboarding.PersonalProfileRequest
+import com.switsh.app.domains.onboarding.Problem
+import com.switsh.app.domains.onboarding.ProfileSelectionRequest
+import com.switsh.app.domains.onboarding.ProfileView
+import com.switsh.app.domains.onboarding.RegisterRequest
+import com.switsh.app.domains.onboarding.UploadSessionRequest
+import com.switsh.app.domains.onboarding.UploadSessionView
+import com.switsh.app.domains.onboarding.VerifyContactRequest
+import android.util.Log
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.call.body
@@ -43,6 +61,7 @@ class OnboardingApiClient(
     private val tokenProvider: suspend () -> String,
     engine: HttpClientEngine? = null,
     private val correlationIdProvider: () -> String = { UUID.randomUUID().toString() },
+    allowInsecureHttp: Boolean = false,
 ) : AutoCloseable {
 
     private val base = baseUrl.trimEnd('/')
@@ -50,9 +69,8 @@ class OnboardingApiClient(
 
     init {
         val uri = URI(base)
-        val loopback = uri.host in setOf("localhost", "127.0.0.1", "10.0.2.2", "::1", "[::1]")
-        require(uri.scheme == "https" || (uri.scheme == "http" && loopback)) {
-            "Onboarding API requires HTTPS (HTTP allowed for loopback only)"
+        require(uri.scheme == "https" || (allowInsecureHttp && uri.scheme == "http")) {
+            "Onboarding API requires HTTPS unless insecure HTTP is explicitly enabled"
         }
     }
 
@@ -77,7 +95,12 @@ class OnboardingApiClient(
         idempotencyKey: String = newKey(),
         correlationId: String = correlationIdProvider(),
     ): ApplicationView = send(Kind.PROBLEM) { token ->
-        client.post("$base/v1/applications") { write(token, idempotencyKey, correlationId); json(request) }
+        client.post("$base/v1/applications")
+        {
+            write(token, idempotencyKey, correlationId)
+            json(request)
+            logCall("registerApplication", "POST", url.buildString(), headers.entries(), gson.toJson(request))
+        }
     }
 
     suspend fun getApplication(
@@ -106,7 +129,8 @@ class OnboardingApiClient(
         correlationId: String = correlationIdProvider(),
     ): ContactResultView = send(Kind.PROBLEM) { token ->
         client.post("$base/v1/applications/${seg(applicationId)}/contacts/$contactType/verify") {
-            write(token, idempotencyKey, correlationId); json(request)
+            write(token, idempotencyKey, correlationId)
+            json(request)
         }
     }
 
@@ -117,7 +141,8 @@ class OnboardingApiClient(
         correlationId: String = correlationIdProvider(),
     ): ApplicationView = send(Kind.PROBLEM) { token ->
         client.put("$base/v1/applications/${seg(applicationId)}/profile-selection") {
-            write(token, idempotencyKey, correlationId); json(request)
+            write(token, idempotencyKey, correlationId)
+            json(request)
         }
     }
 
@@ -139,7 +164,8 @@ class OnboardingApiClient(
         correlationId: String = correlationIdProvider(),
     ): DocumentView = send(Kind.PROBLEM) { token ->
         client.post("$base/v1/applications/${seg(applicationId)}/identity-documents") {
-            write(token, idempotencyKey, correlationId); json(request)
+            write(token, idempotencyKey, correlationId)
+            json(request)
         }
     }
 
@@ -150,7 +176,8 @@ class OnboardingApiClient(
         correlationId: String = correlationIdProvider(),
     ): ProfileView = send(Kind.PROBLEM) { token ->
         client.put("$base/v1/applications/${seg(applicationId)}/personal-profile") {
-            write(token, idempotencyKey, correlationId); json(request)
+            write(token, idempotencyKey, correlationId)
+            json(request)
         }
     }
 
@@ -209,7 +236,8 @@ class OnboardingApiClient(
         correlationId: String = correlationIdProvider(),
     ): OnboardingRecord = send(Kind.LEGACY) { token ->
         client.patch("$base/v1/onboardings/${seg(id)}/sections/${seg(sectionSlug)}") {
-            write(token, null, correlationId); json(data)
+            write(token, null, correlationId)
+            json(data)
         }
     }
 
@@ -229,6 +257,18 @@ class OnboardingApiClient(
         header(CORRELATION_ID, correlationId)
         if (idempotencyKey != null) header(IDEMPOTENCY_KEY, idempotencyKey)
     }
+
+    private fun logCall(operation: String, method: String, url: String, headers: Set<Map.Entry<String, List<String>>>, body: String) {
+        val headerLines = headers.joinToString("\n") { (name, values) ->
+            val shown = if (name.equals(HttpHeaders.Authorization, ignoreCase = true)) values.map(::maskBearer) else values
+            "  $name: ${shown.joinToString(", ")}"
+        }
+        // android.util.Log is not available in plain JVM unit tests.
+        runCatching { Log.d(LOG_TAG, "$operation request\n$method $url\nHeaders:\n$headerLines\nBody:\n$body") }
+    }
+
+    private fun maskBearer(value: String): String =
+        if (value.length > 12) value.take(7) + "****" + value.takeLast(4) else "****"
 
     private fun HttpRequestBuilder.json(body: Any) {
         contentType(ContentType.Application.Json)
@@ -259,6 +299,7 @@ class OnboardingApiClient(
     private data class LegacyErrorBody(val error: String? = null)
 
     private companion object {
+        const val LOG_TAG = "Switsh/OnboardingApi"
         const val TIMEOUT_MS = 10_000L
         const val CORRELATION_ID = "X-Correlation-Id"
         const val IDEMPOTENCY_KEY = "Idempotency-Key"

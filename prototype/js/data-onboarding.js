@@ -22,12 +22,12 @@ SCREENS.push({
     <h1 class="block-title">${L('onb.registration.title', 'Créer votre compte')}</h1>
     <p class="block-sub">${L('onb.registration.subtitle', '100% mobile — vérifié par SMS et e-mail')}</p>
     <div class="field"><label>${L('onb.phone.label', 'Numéro de téléphone')} <span class="req">*</span></label>
-      <div class="input-group"><span class="prefix">🇨🇩 +243</span><input class="input has-prefix" placeholder="9XX XXX XXX" style="padding-left:4.75rem;" /></div>
+      <div class="input-group"><span class="prefix">🇨🇩 +243</span><input class="input has-prefix" data-field="phoneNumber" placeholder="9XX XXX XXX" style="padding-left:4.75rem;" /></div>
       <div class="hint">${L('onb.phone.hint', 'Format RDC +243 suivi de 9 chiffres')}</div>
     </div>
-    ${renderField(F({ label: L('onb.email.label', 'Adresse e-mail'), ui: 'email', required: 'yes', placeholder: 'nom@exemple.cd' }))}
+    ${renderField(F({ label: L('onb.email.label', 'Adresse e-mail'), ui: 'email', required: 'yes', fieldId: 'email', placeholder: 'nom@exemple.cd' }))}
     ${renderField(F({ label: L('onb.password.label', 'Mot de passe'), ui: 'password', required: 'yes', hint: L('onb.password.hint', 'Min. 8 caractères, majuscule, chiffre, caractère spécial') }))}
-    <div class="checkline checked" style="margin:var(--space-4) 0;">
+    <div class="checkline checked" data-field="termsAccepted" style="margin:var(--space-4) 0;">
       <div class="box">${ICONS.check}</div>
       <span>${L('onb.terms.accept', 'J\'accepte les')} <a href="#">${L('onb.terms.conditions', 'Conditions générales')}</a> ${L('onb.terms.and', 'et la')} <a href="#">${L('onb.terms.privacy', 'Politique de confidentialité')}</a> Switsh.</span>
     </div>

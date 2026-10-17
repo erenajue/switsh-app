@@ -39,13 +39,15 @@ import java.util.Locale
 class ScreenState {
     var choice = 0
     var languageCode: String? = null
+    val inputValues = mutableMapOf<String, String>()
+    var termsAccepted = true
 }
 
 class RenderedScreen(val content: LinearLayout, val cta: View?, val state: ScreenState)
 
 interface RenderActions {
     fun navigate(id: String)
-    fun primary(button: Block, state: ScreenState)
+    fun primary(button: Block, state: ScreenState, onComplete: (Boolean) -> Unit = {})
     fun action(action: String)
     fun message(text: String)
     fun pinEntered()
@@ -184,6 +186,16 @@ class BlockRenderer(private val ctx: Context, private val actions: RenderActions
                 b.prefix?.startsWith("+") == true -> InputType.TYPE_CLASS_PHONE
                 else -> InputType.TYPE_CLASS_TEXT
             }
+            b.fieldId?.let { fieldId ->
+                addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
+                    override fun afterTextChanged(s: Editable?) {
+                        state.inputValues[fieldId] = s?.toString().orEmpty()
+                    }
+                })
+                state.inputValues[fieldId] = text.toString()
+            }
             if (multiline) {
                 minLines = 3
                 gravity = Gravity.TOP
@@ -306,6 +318,13 @@ class BlockRenderer(private val ctx: Context, private val actions: RenderActions
         text = b.text
         textSize = 13f
         isChecked = b.checked
+        b.fieldId?.let { fieldId ->
+            state.termsAccepted = b.checked
+            setOnCheckedChangeListener { _, checked ->
+                state.termsAccepted = checked
+                state.inputValues[fieldId] = checked.toString()
+            }
+        }
         setTextColor(ui.color(R.color.text_muted))
     }
 
@@ -499,7 +518,17 @@ class BlockRenderer(private val ctx: Context, private val actions: RenderActions
                 when {
                     !b.action.isNullOrBlank() -> actions.action(b.action)
                     b.style == "primary" || !b.to.isNullOrBlank() || !b.toChoice.isNullOrEmpty() -> {
-                        if (b.style != "primary" && !b.to.isNullOrBlank()) actions.navigate(b.to) else actions.primary(b, state)
+                        if (b.style != "primary" && !b.to.isNullOrBlank()) {
+                            actions.navigate(b.to)
+                        } else {
+                            val originalText = b.text
+                            isEnabled = false
+                            text = ScreenLabels.resolve("{{common.please_wait}}", actions.currentLanguage())
+                            actions.primary(b, state) {
+                                isEnabled = true
+                                text = originalText
+                            }
+                        }
                     }
                     else -> actions.message(ctx.getString(R.string.example_only))
                 }

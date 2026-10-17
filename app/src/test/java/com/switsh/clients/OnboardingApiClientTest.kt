@@ -30,6 +30,7 @@ class OnboardingApiClientTest {
             RegisterRequest("+243999999999", "a@b.c", "fr-CD", TermsRequest("1", "1", true)),
         )
         assertEquals(ApplicationState.DRAFT, res.state)
+        assertEquals("https://api.example.com/v1/applications", seen!!.url.toString())
         assertEquals("Bearer tok", seen!!.headers[HttpHeaders.Authorization])
         assertNotNull(seen!!.headers["Idempotency-Key"])
         assertNotNull(seen!!.headers["X-Correlation-Id"])
@@ -67,5 +68,10 @@ class OnboardingApiClientTest {
         } catch (e: IllegalArgumentException) {
             assertTrue(true)
         }
+    }
+
+    @Test
+    fun allowsCleartextRemoteHostWhenExplicitlyEnabled() {
+        OnboardingApiClient("http://192.168.1.25:8080", { "t" }, allowInsecureHttp = true)
     }
 }

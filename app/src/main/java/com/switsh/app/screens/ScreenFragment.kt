@@ -150,13 +150,15 @@ open class ScreenFragment : Fragment(), RenderActions {
         if (id in TAB_ROOTS || id == "start-unlock") navigator.reset(id) else navigator.open(id)
     }
 
-    override fun primary(button: Block, state: ScreenState) {
+    override fun primary(button: Block, state: ScreenState, onComplete: (Boolean) -> Unit) {
         val target = button.toChoice?.getOrNull(state.choice) ?: button.to
         if (target != null) {
             navigate(target)
+            onComplete(true)
         } else {
             message(getString(R.string.saved_example))
             if (parentFragmentManager.backStackEntryCount > 0) requireActivity().onBackPressedDispatcher.onBackPressed()
+            onComplete(false)
         }
     }
 

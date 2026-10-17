@@ -17,7 +17,7 @@ class SplashFragment : ScreenFragment() {
     override fun onResume() {
         super.onResume()
         handler.postDelayed({
-            val next = firstScreen()
+            val next = if (NetworkStatus.hasValidatedInternet(requireContext())) firstScreen() else "start-offline"
             Log.d(logTag, "splash done -> $next")
             navigator.reset(next)
         }, SPLASH_MS)

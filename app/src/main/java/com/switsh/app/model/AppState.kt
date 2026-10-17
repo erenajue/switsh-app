@@ -1,6 +1,7 @@
 package com.switsh.app.model
 
 import android.content.Context
+import java.util.UUID
 
 /** First-connection / registration state kept on the device. */
 class AppState(context: Context) {
@@ -12,6 +13,26 @@ class AppState(context: Context) {
 
     val languageChosen: Boolean get() = prefs.getBoolean(KEY_LANGUAGE_CHOSEN, false)
 
+    var registrationApplicationId: String?
+        get() = prefs.getString(KEY_REGISTRATION_APPLICATION_ID, null)
+        set(value) = prefs.edit().putString(KEY_REGISTRATION_APPLICATION_ID, value).apply()
+
+    var registrationPhoneNumber: String?
+        get() = prefs.getString(KEY_REGISTRATION_PHONE_NUMBER, null)
+        set(value) = prefs.edit().putString(KEY_REGISTRATION_PHONE_NUMBER, value).apply()
+
+    var onboardingAccessToken: String?
+        get() = prefs.getString(KEY_ONBOARDING_ACCESS_TOKEN, null) ?: getOrGenerateOnboardingAccessToken()
+        set(value) = prefs.edit().putString(KEY_ONBOARDING_ACCESS_TOKEN, value).apply()
+
+    fun getOrGenerateOnboardingAccessToken(): String {
+        val existing = prefs.getString(KEY_ONBOARDING_ACCESS_TOKEN, null)?.takeIf(String::isNotBlank)
+        if (existing != null) return existing
+        val newToken = UUID.randomUUID().toString()
+        prefs.edit().putString(KEY_ONBOARDING_ACCESS_TOKEN, newToken).apply()
+        return newToken
+    }
+
     var onboardingDone: Boolean
         get() = prefs.getBoolean(KEY_ONBOARDING_DONE, false)
         set(value) = prefs.edit().putBoolean(KEY_ONBOARDING_DONE, value).apply()
@@ -20,6 +41,9 @@ class AppState(context: Context) {
         const val DEFAULT_LANGUAGE = "fr"
         private const val KEY_LANGUAGE = "selected_language"
         private const val KEY_LANGUAGE_CHOSEN = "language_chosen"
+        private const val KEY_REGISTRATION_APPLICATION_ID = "registration_application_id"
+        private const val KEY_REGISTRATION_PHONE_NUMBER = "registration_phone_number"
+        private const val KEY_ONBOARDING_ACCESS_TOKEN = "onboarding_access_token"
         private const val KEY_ONBOARDING_DONE = "onboarding_done"
     }
 }

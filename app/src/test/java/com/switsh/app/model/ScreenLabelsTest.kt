@@ -10,7 +10,7 @@ class ScreenLabelsTest {
     @Test
     fun generatedOnboardingLabelsExistInEverySupportedLanguage() {
         val screens = File("src/main/assets/screens.json").readText()
-        val keys = Regex("""\{\{([a-z0-9_.-]+)}}""")
+        val keys = Regex("""\{\{([a-z0-9_.\-]+)}}""")
             .findAll(screens)
             .map { it.groupValues[1] }
             .toSet()

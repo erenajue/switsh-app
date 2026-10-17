@@ -11,7 +11,7 @@ function L(key, fallback) {
 /* Field descriptor factory — one object powers both the mobile UI input AND the BRD spec table row. */
 function F(opts) {
   return Object.assign({
-    label: '', specType: 'Texte', ui: 'text', required: 'yes', hint: '', options: [], placeholder: '', icon: null, prefix: null,
+    label: '', specType: 'Texte', ui: 'text', required: 'yes', hint: '', options: [], placeholder: '', icon: null, prefix: null, fieldId: null,
   }, opts);
 }
 
@@ -38,11 +38,11 @@ function renderField(f) {
     case 'number':
     case 'date': {
       const prefix = f.prefix ? `<span class="prefix">${esc(f.prefix)}</span>` : '';
-      control = `<div class="input-group">${prefix}<input class="input ${f.prefix ? 'has-prefix' : ''}" type="${f.ui === 'tel' ? 'text' : f.ui}" placeholder="${esc(f.placeholder)}" /></div>`;
+      control = `<div class="input-group">${prefix}<input class="input ${f.prefix ? 'has-prefix' : ''}" type="${f.ui === 'tel' ? 'text' : f.ui}" placeholder="${esc(f.placeholder)}" ${f.fieldId ? `data-field="${esc(f.fieldId)}"` : ''} /></div>`;
       break;
     }
     case 'password':
-      control = `<div class="input-group"><input class="input" type="password" placeholder="${esc(f.placeholder || '••••••••')}" /></div>`;
+      control = `<div class="input-group"><input class="input" type="password" placeholder="${esc(f.placeholder || '••••••••')}" ${f.fieldId ? `data-field="${esc(f.fieldId)}"` : ''} /></div>`;
       break;
     case 'textarea':
       control = `<textarea class="input" rows="3" placeholder="${esc(f.placeholder)}" style="resize:none;"></textarea>`;
