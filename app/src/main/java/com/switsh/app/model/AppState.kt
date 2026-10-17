@@ -21,6 +21,10 @@ class AppState(context: Context) {
         get() = prefs.getString(KEY_REGISTRATION_PHONE_NUMBER, null)
         set(value) = prefs.edit().putString(KEY_REGISTRATION_PHONE_NUMBER, value).apply()
 
+    var registrationEmail: String?
+        get() = prefs.getString(KEY_REGISTRATION_EMAIL, null)
+        set(value) = prefs.edit().putString(KEY_REGISTRATION_EMAIL, value).apply()
+
     var onboardingAccessToken: String?
         get() = prefs.getString(KEY_ONBOARDING_ACCESS_TOKEN, null) ?: getOrGenerateOnboardingAccessToken()
         set(value) = prefs.edit().putString(KEY_ONBOARDING_ACCESS_TOKEN, value).apply()
@@ -43,6 +47,7 @@ class AppState(context: Context) {
         private const val KEY_LANGUAGE_CHOSEN = "language_chosen"
         private const val KEY_REGISTRATION_APPLICATION_ID = "registration_application_id"
         private const val KEY_REGISTRATION_PHONE_NUMBER = "registration_phone_number"
+        private const val KEY_REGISTRATION_EMAIL = "registration_email"
         private const val KEY_ONBOARDING_ACCESS_TOKEN = "onboarding_access_token"
         private const val KEY_ONBOARDING_DONE = "onboarding_done"
     }

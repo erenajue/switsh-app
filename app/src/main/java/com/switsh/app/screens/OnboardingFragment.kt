@@ -71,18 +71,32 @@ class OnboardingFragment : ScreenFragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             try {
                 withContext(Dispatchers.IO) {
-                    val existingId = appState.registrationApplicationId
-                    val applicationId = if (existingId != null) {
-                        existingId
+                    // IDs from the former offline fallback were never registered with the API.
+                    val previousId = appState.registrationApplicationId?.takeUnless { it.startsWith(DEMO_ID_PREFIX) }
+                    val sameContacts = appState.registrationPhoneNumber == phoneNumber &&
+                        appState.registrationEmail == email
+                    val applicationId = if (previousId != null && sameContacts) {
+                        previousId
                     } else {
                         val registered = navigator.onboardingApi.registerApplication(request)
-                        registered.applicationId
+                        val newId = registered.applicationId
                             ?.takeIf(String::isNotBlank)
-                            ?.also {
-                                appState.registrationApplicationId = it
-                                appState.registrationPhoneNumber = phoneNumber
-                            }
                             ?: error("Registration response did not include an application ID")
+                        appState.registrationApplicationId = newId
+                        appState.registrationPhoneNumber = phoneNumber
+                        appState.registrationEmail = email
+                        // Close the application registered with the old contacts; best effort,
+                        // since it may already be expired or withdrawn.
+                        if (previousId != null) {
+                            try {
+                                navigator.onboardingApi.withdrawApplication(previousId)
+                            } catch (cancelled: CancellationException) {
+                                throw cancelled
+                            } catch (error: Exception) {
+                                Log.w(logTag, "could not withdraw previous application", error)
+                            }
+                        }
+                        newId
                     }
                     navigator.onboardingApi.issueContactChallenge(applicationId, ContactType.PHONE)
                 }
@@ -91,13 +105,9 @@ class OnboardingFragment : ScreenFragment() {
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (error: Exception) {
-                Log.w(logTag, "application registration or contact challenge failed, using prototype fallback", error)
-                if (appState.registrationApplicationId == null) {
-                    appState.registrationApplicationId = "demo-${java.util.UUID.randomUUID().toString().take(8)}"
-                    appState.registrationPhoneNumber = phoneNumber
-                }
-                navigate(button.to ?: "onb-otp")
-                onComplete(true)
+                Log.w(logTag, "application registration or contact challenge failed", error)
+                showMessage("{{onb.error.registration_failed.title}}", "{{onb.error.registration_failed.message}}")
+                onComplete(false)
             }
         }
     }
@@ -116,5 +126,6 @@ class OnboardingFragment : ScreenFragment() {
     private companion object {
         const val TERMS_VERSION = "2026-09-01"
         const val PRIVACY_VERSION = "2026-09-01"
+        const val DEMO_ID_PREFIX = "demo-"
     }
 }
