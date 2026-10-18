@@ -93,7 +93,7 @@ SCREENS.push({
   body: () => `
     <div style="text-align:center;padding-top:var(--space-10);">
       <div style="width:64px;height:64px;border-radius:50%;background:var(--color-primary-highlight);color:var(--color-primary);display:flex;align-items:center;justify-content:center;margin:0 auto var(--space-4);">${ICONS.face}</div>
-      <div style="font-weight:700;">Bon retour, Mireille</div>
+      <div style="font-weight:700;">Bon retour</div>
       <p class="block-sub">Entrez votre code PIN pour accéder à votre compte</p>
       <div style="display:flex;justify-content:center;gap:var(--space-3);margin:var(--space-6) 0;">
         ${[0,1,2,3].map(i => `<span style="width:14px;height:14px;border-radius:50%;background:${i<2?'var(--color-primary)':'var(--color-surface-offset-2)'};display:inline-block;"></span>`).join('')}

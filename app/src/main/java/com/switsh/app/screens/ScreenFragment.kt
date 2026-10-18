@@ -176,7 +176,10 @@ open class ScreenFragment : Fragment(), RenderActions {
     }
 
     // Placeholder authentication: any complete PIN (or the biometric key) unlocks the demo account.
-    override fun pinEntered() = navigate("bank-accounts")
+    override fun pinEntered() {
+        navigator.appState.recordSuccessfulConnection()
+        navigate("bank-accounts")
+    }
 
     override fun currentLanguage(): String = navigator.appState.languageCode
 

@@ -1,11 +1,13 @@
 package com.switsh.app.model
 
 import android.content.Context
+import com.switsh.app.data.LastConnectionDatabase
 import java.util.UUID
 
 /** First-connection / registration state kept on the device. */
 class AppState(context: Context) {
     private val prefs = context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE)
+    private val lastConnectionDatabase = LastConnectionDatabase(context.applicationContext)
 
     var languageCode: String
         get() = prefs.getString(KEY_LANGUAGE, DEFAULT_LANGUAGE) ?: DEFAULT_LANGUAGE
@@ -40,6 +42,21 @@ class AppState(context: Context) {
     var onboardingDone: Boolean
         get() = prefs.getBoolean(KEY_ONBOARDING_DONE, false)
         set(value) = prefs.edit().putBoolean(KEY_ONBOARDING_DONE, value).apply()
+
+    val lastConnectedName: String?
+        get() = lastConnectionDatabase.getLastConnectedName()
+
+    fun saveProfileName(givenNames: String, surname: String) {
+        lastConnectionDatabase.saveProfileName(
+            listOf(givenNames.trim(), surname.trim()).filter(String::isNotEmpty).joinToString(" "),
+        )
+    }
+
+    fun recordSuccessfulConnection() {
+        lastConnectionDatabase.recordSuccessfulConnection()
+    }
+
+    fun close() = lastConnectionDatabase.close()
 
     companion object {
         const val DEFAULT_LANGUAGE = "fr"

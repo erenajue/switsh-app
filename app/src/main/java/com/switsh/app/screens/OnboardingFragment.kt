@@ -18,6 +18,12 @@ import kotlinx.coroutines.withContext
 /** "Onboarding" section: registration, KYC/KYB steps and verification status. */
 class OnboardingFragment : ScreenFragment() {
     override fun primary(button: Block, state: ScreenState, onComplete: (Boolean) -> Unit) {
+        if (screenId == "onb-infos-perso") {
+            navigator.appState.saveProfileName(
+                state.inputValues["givenNames"].orEmpty(),
+                state.inputValues["surname"].orEmpty(),
+            )
+        }
         if (screenId == "onb-inscription") {
             register(button, state, onComplete)
             return

@@ -1,1 +1,872 @@
-{"groups":[{"id":"start","label":"Démarrage"},{"id":"onboarding","label":"Onboarding & KYC/AML"}],"screens":[{"id":"start-splash","group":"start","title":"Écran de lancement","subtitle":"Premier lancement de l'application","chrome":"splash","bonus":true,"blocks":[{"t":"splash"}]},{"id":"start-language","group":"start","title":"Choix de la langue","subtitle":"Premier lancement, avant inscription","chrome":"auth","blocks":[{"t":"hero","icon":"logo","title":"Choisissez votre langue","sub":"Sélectionnez la langue de l'application. Vous pourrez la modifier à tout moment."},{"t":"languages","items":[{"name":"Français","code":"FR"},{"name":"English","code":"EN"},{"name":"Lingála","code":"LN"},{"name":"Kikongo","code":"KG"},{"name":"Tshiluba","code":"LUA"},{"name":"Kiswahili","code":"SW"}]},{"t":"cta","children":[{"t":"button","text":"Continuer","style":"primary","to":"onb-inscription"}]}]},{"id":"start-offline","group":"start","title":"{{onb.network.required.title}}","chrome":"auth","blocks":[{"t":"title","text":"{{onb.network.required.title}}"},{"t":"subtitle","text":"{{onb.network.required.message}}"},{"t":"cta","children":[{"t":"button","text":"{{common.retry}}","style":"primary","to":"start-splash"}]}]},{"id":"start-unlock","group":"start","title":"Déverrouillage — PIN & biométrie","subtitle":"Reconnexion d'un client déjà inscrit","chrome":"auth","bonus":true,"blocks":[{"t":"pinpad","name":"Mireille","title":"Bon retour, Mireille","sub":"Entrez votre code PIN pour accéder à votre compte","forgot":"Code PIN oublié ?"}]},{"id":"onb-inscription","group":"onboarding","title":"{{onb.registration.screen_title}}","subtitle":"Écran « Inscription »","chrome":"sub","step":[1,5],"blocks":[{"t":"title","text":"{{onb.registration.title}}"},{"t":"subtitle","text":"{{onb.registration.subtitle}}"},{"t":"field","hint":"{{onb.phone.hint}}","fieldId":"phoneNumber","label":"{{onb.phone.label}}","required":"yes","ui":"text","placeholder":"9XX XXX XXX","prefix":"🇨🇩 +243"},{"t":"field","fieldId":"email","label":"{{onb.email.label}}","required":"yes","ui":"email","placeholder":"nom@exemple.cd"},{"t":"field","hint":"{{onb.password.hint}}","label":"{{onb.password.label}}","required":"yes","ui":"password","placeholder":"••••••••"},{"t":"check","text":"{{onb.terms.accept}} {{onb.terms.conditions}} {{onb.terms.and}} {{onb.terms.privacy}} Switsh.","fieldId":"termsAccepted","checked":true},{"t":"cta","children":[{"t":"button","text":"{{onb.registration.send_code}}","style":"primary","to":"onb-otp"}]}]},{"id":"onb-otp","group":"onboarding","title":"{{onb.otp.screen_title}}","subtitle":"Étape de vérification de l'écran « Inscription »","chrome":"sub","step":[2,5],"bonus":true,"blocks":[{"t":"title","text":"{{onb.otp.title}}"},{"t":"subtitle","text":"{{onb.otp.subtitle}} +243 9XX XXX XXX"},{"t":"field","label":"{{onb.otp.label}}","required":"yes","ui":"otp","length":6},{"t":"text","text":"{{onb.otp.expiry}} 04:12 · {{onb.otp.attempts}}"},{"t":"notice","kind":"info","icon":"shield","text":"{{onb.otp.notice}}"},{"t":"cta","children":[{"t":"button","text":"{{onb.otp.verify}}","style":"primary","to":"onb-auth-security"},{"t":"button","text":"{{onb.otp.resend}}","style":"ghost","small":true,"action":"resend"}]}]},{"id":"onb-auth-security","group":"onboarding","title":"{{onb.security.screen_title}}","subtitle":"Écran « Authentification & sécurité »","chrome":"sub","step":[3,5],"blocks":[{"t":"title","text":"{{onb.security.title}}"},{"t":"subtitle","text":"{{onb.security.subtitle}}"},{"t":"field","hint":"{{onb.security.pin_hint}}","label":"{{onb.security.create_pin}}","required":"yes","ui":"password","placeholder":"••••••••"},{"t":"field","label":"{{onb.security.confirm_pin}}","required":"yes","ui":"password","placeholder":"••••••••"},{"t":"card","children":[{"t":"field","ui":"toggle","placeholder":"{{onb.security.face_id_unlock}}","on":true,"required":"no"},{"t":"field","ui":"toggle","placeholder":"{{onb.security.fingerprint_unlock}}","on":false,"required":"no"}]},{"t":"notice","kind":"success","icon":"shield","text":"{{onb.security.biometric_notice}}"},{"t":"cta","children":[{"t":"button","text":"{{onb.security.activate}}","style":"primary","to":"onb-profile-select"}]}]},{"id":"onb-profile-select","group":"onboarding","title":"{{onb.profile.screen_title}}","subtitle":"Écran « Sélection du profil client »","chrome":"sub","step":[4,5],"blocks":[{"t":"title","text":"{{onb.profile.title}}"},{"t":"subtitle","text":"{{onb.profile.subtitle}}"},{"t":"choice","icon":"user","title":"{{onb.profile.personal}}","sub":"{{onb.profile.personal_sub}}","selected":true},{"t":"choice","icon":"building","title":"{{onb.profile.business}}","sub":"{{onb.profile.business_sub}}","selected":false},{"t":"field","label":"{{onb.profile.country}}","required":"yes","ui":"select","options":["{{onb.country.dr_congo}}","{{onb.country.other}}"]},{"t":"cta","children":[{"t":"button","text":"{{common.continue}}","style":"primary","to":"onb-id-particulier","toChoice":["onb-id-particulier","onb-kyb"]}]}]},{"id":"onb-id-particulier","group":"onboarding","title":"{{onb.identity.screen_title}}","subtitle":"Écran « Pièce d'identité — Particulier »","chrome":"sub","step":[5,5],"blocks":[{"t":"title","text":"{{onb.identity.title}}"},{"t":"subtitle","text":"{{onb.identity.subtitle}}"},{"t":"field","label":"{{onb.identity.document_type}}","required":"yes","ui":"select","options":["CENI","ONIP / NIN","{{onb.identity.passport}}","{{onb.identity.resident_card}}"]},{"t":"field","label":"{{onb.identity.document_number}}","required":"yes","ui":"text","placeholder":"{{onb.identity.document_example}}"},{"t":"fieldrow","children":[{"t":"field","label":"{{onb.identity.issue_date}}","required":"yes","ui":"date"},{"t":"field","label":"{{onb.identity.expiry_date}}","required":"yes","ui":"date"}]},{"t":"section","text":"{{onb.identity.documents_section}}"},{"t":"field","ui":"file","icon":"checkCircle","title":"{{onb.identity.front_captured}}","sub":"{{onb.identity.ocr_sharpness}}","done":true,"required":"no"},{"t":"field","label":"{{onb.identity.back_photo}}","required":"cond","ui":"file","icon":"camera","title":"{{onb.identity.take_back_photo}}","sub":"{{common.file_formats}}","done":false},{"t":"field","label":"{{onb.identity.liveness_selfie}}","required":"yes","ui":"file","icon":"face","title":"{{onb.identity.start_liveness}}","sub":"{{common.file_formats}}","done":false},{"t":"cta","children":[{"t":"button","text":"{{onb.identity.validate}}","style":"primary","to":"onb-infos-perso"}]}]},{"id":"onb-infos-perso","group":"onboarding","title":"{{onb.personal.screen_title}}","subtitle":"Écran « Informations personnelles »","chrome":"sub","blocks":[{"t":"title","text":"{{onb.personal.title}}"},{"t":"subtitle","text":"{{onb.personal.subtitle}}"},{"t":"fieldrow","children":[{"t":"field","label":"{{onb.personal.last_name}}","required":"yes","ui":"text","placeholder":"KABUYA"},{"t":"field","label":"{{onb.personal.first_name}}","required":"yes","ui":"text","placeholder":"Mireille"}]},{"t":"fieldrow","children":[{"t":"field","label":"{{onb.personal.birth_date}}","required":"yes","ui":"date"},{"t":"field","label":"{{onb.personal.gender}}","required":"yes","ui":"select","options":["{{onb.gender.male}}","{{onb.gender.female}}"]}]},{"t":"field","label":"{{onb.personal.birth_place}}","required":"yes","ui":"text","placeholder":"{{onb.example.kinshasa}}"},{"t":"field","label":"{{onb.personal.nationality}}","required":"yes","ui":"select","options":["{{onb.nationality.congolese}}","{{onb.country.other}}"]},{"t":"field","label":"{{onb.personal.address}}","required":"yes","ui":"text","placeholder":"{{onb.example.address}}"},{"t":"field","label":"{{onb.personal.city}}","required":"yes","ui":"text","placeholder":"{{onb.example.city}}"},{"t":"field","label":"{{onb.personal.profession}}","required":"yes","ui":"text","placeholder":"{{onb.example.profession}}"},{"t":"field","label":"{{onb.personal.income_source}}","required":"yes","ui":"select","options":["{{onb.income.salary}}","{{onb.income.business}}","{{onb.country.other}}"]},{"t":"field","label":"{{onb.personal.monthly_income}}","required":"no","ui":"number","placeholder":"0"},{"t":"cta","children":[{"t":"button","text":"{{common.continue}}","style":"primary","to":"onb-justif-domicile"}]}]},{"id":"onb-justif-domicile","group":"onboarding","title":"{{onb.address_proof.screen_title}}","subtitle":"Écran « Justificatif de domicile »","chrome":"sub","blocks":[{"t":"title","text":"{{onb.address_proof.title}}"},{"t":"subtitle","text":"{{onb.address_proof.subtitle}}"},{"t":"field","label":"{{onb.address_proof.type}}","required":"yes","ui":"select","options":["{{onb.address_proof.residence}}","{{onb.address_proof.utility_bill}}","{{onb.address_proof.geolocation}}","{{onb.address_proof.honor_declaration}}"]},{"t":"field","hint":"{{onb.address_proof.age_hint}}","label":"{{onb.identity.issue_date}}","required":"yes","ui":"date"},{"t":"field","label":"{{onb.address_proof.scanned_document}}","required":"cond","ui":"file","icon":"file","title":"{{onb.address_proof.upload_hint}}","sub":"{{common.file_formats}}","done":false},{"t":"card","children":[{"t":"row","card":true,"icon":"globe","title":"{{onb.address_proof.geolocation}}","sub":"{{onb.address_proof.alternative}}","trailing":{"kind":"toggle","on":false}}]},{"t":"cta","children":[{"t":"button","text":"{{onb.address_proof.submit}}","style":"primary","to":"onb-status"}]}]},{"id":"onb-kyb","group":"onboarding","title":"{{onb.business.screen_title}}","subtitle":"Écran « Entreprise / PME (KYB) »","chrome":"sub","blocks":[{"t":"title","text":"{{onb.business.title}}"},{"t":"subtitle","text":"{{onb.business.subtitle}}"},{"t":"field","label":"{{onb.business.company_name}}","required":"yes","ui":"text","placeholder":"Switsh Trading SARL"},{"t":"fieldrow","children":[{"t":"field","label":"{{onb.business.rccm}}","required":"yes","ui":"text"},{"t":"field","label":"NIF","required":"yes","ui":"text"}]},{"t":"field","label":"{{onb.business.legal_form}}","required":"yes","ui":"select","options":["SARL","SA","{{onb.business.sole_proprietorship}}","{{onb.country.other}}"]},{"t":"field","label":"{{onb.business.industry}}","required":"yes","ui":"select","options":["{{onb.business.general_trade}}","{{onb.business.import_export}}","{{onb.business.services}}","{{onb.business.agri_food}}","{{onb.country.other}}"]},{"t":"field","label":"{{onb.business.registered_address}}","required":"yes","ui":"text"},{"t":"section","text":"{{onb.business.representatives}}"},{"t":"field","label":"{{onb.business.representative_name}}","required":"yes","ui":"text"},{"t":"field","ui":"file","icon":"file","title":"{{onb.business.representative_id}}","sub":"{{onb.business.accepted_ids}}","done":false,"required":"no"},{"t":"card","children":[{"t":"row","card":true,"lead":"MK","title":"Mireille Kabuya","sub":"{{onb.business.ubo}} · 60%","trailing":{"kind":"badge","text":"{{common.verified}}","style":"badge-success"}}]},{"t":"button","text":"{{onb.business.add_ubo}}","style":"secondary","small":true,"icon":"plus"},{"t":"cta","children":[{"t":"button","text":"{{onb.business.submit}}","style":"primary","to":"onb-status"}]}]},{"id":"onb-status","group":"onboarding","title":"{{onb.status.screen_title}}","subtitle":"Écran complémentaire (UX) — suivi du tiering KYC","chrome":"sub","bonus":true,"blocks":[{"t":"hero","icon":"checkCircle","title":"{{onb.status.title}}","sub":"{{onb.status.subtitle}}"},{"t":"card","children":[{"t":"row","title":"{{onb.status.kyc_status}}","sub":"{{onb.status.final_decision}}","trailing":{"kind":"badge","text":"VERIFIED","style":"badge-success"}},{"t":"row","title":"{{onb.status.assigned_level}}","sub":"{{onb.status.limits_features}}","trailing":{"kind":"badge","text":"{{onb.status.level_two}}","style":"badge-usd"}},{"t":"row","title":"{{onb.status.aml_screening}}","sub":"{{onb.status.screening_lists}}","trailing":{"kind":"badge","text":"CLEAR","style":"badge-success"}}]},{"t":"notice","kind":"warn","icon":"alert","text":"{{onb.status.address_proof_notice}}"},{"t":"cta","children":[{"t":"button","text":"{{onb.status.open_account}}","style":"primary","to":"bank-accounts"}]}]}]}
+{
+  "groups": [
+    {
+      "id": "start",
+      "label": "Démarrage"
+    },
+    {
+      "id": "onboarding",
+      "label": "Onboarding & KYC/AML"
+    }
+  ],
+  "screens": [
+    {
+      "id": "start-splash",
+      "group": "start",
+      "title": "Écran de lancement",
+      "subtitle": "Premier lancement de l'application",
+      "chrome": "splash",
+      "bonus": true,
+      "blocks": [
+        {
+          "t": "splash"
+        }
+      ]
+    },
+    {
+      "id": "start-language",
+      "group": "start",
+      "title": "Choix de la langue",
+      "subtitle": "Premier lancement, avant inscription",
+      "chrome": "auth",
+      "blocks": [
+        {
+          "t": "hero",
+          "icon": "logo",
+          "title": "Choisissez votre langue",
+          "sub": "Sélectionnez la langue de l'application. Vous pourrez la modifier à tout moment."
+        },
+        {
+          "t": "languages",
+          "items": [
+            {
+              "name": "Français",
+              "code": "FR"
+            },
+            {
+              "name": "English",
+              "code": "EN"
+            },
+            {
+              "name": "Lingála",
+              "code": "LN"
+            },
+            {
+              "name": "Kikongo",
+              "code": "KG"
+            },
+            {
+              "name": "Tshiluba",
+              "code": "LUA"
+            },
+            {
+              "name": "Kiswahili",
+              "code": "SW"
+            }
+          ]
+        },
+        {
+          "t": "cta",
+          "children": [
+            {
+              "t": "button",
+              "text": "Continuer",
+              "style": "primary",
+              "to": "onb-inscription"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "start-offline",
+      "group": "start",
+      "title": "{{onb.network.required.title}}",
+      "chrome": "auth",
+      "blocks": [
+        {
+          "t": "title",
+          "text": "{{onb.network.required.title}}"
+        },
+        {
+          "t": "subtitle",
+          "text": "{{onb.network.required.message}}"
+        },
+        {
+          "t": "cta",
+          "children": [
+            {
+              "t": "button",
+              "text": "{{common.retry}}",
+              "style": "primary",
+              "to": "start-splash"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "start-unlock",
+      "group": "start",
+      "title": "Déverrouillage — PIN & biométrie",
+      "subtitle": "Reconnexion d'un client déjà inscrit",
+      "chrome": "auth",
+      "bonus": true,
+      "blocks": [
+        {
+          "t": "pinpad",
+          "title": "Bon retour",
+          "sub": "Entrez votre code PIN pour accéder à votre compte",
+          "forgot": "Code PIN oublié ?"
+        }
+      ]
+    },
+    {
+      "id": "onb-inscription",
+      "group": "onboarding",
+      "title": "{{onb.registration.screen_title}}",
+      "subtitle": "Écran « Inscription »",
+      "chrome": "sub",
+      "step": [
+        1,
+        5
+      ],
+      "blocks": [
+        {
+          "t": "title",
+          "text": "{{onb.registration.title}}"
+        },
+        {
+          "t": "subtitle",
+          "text": "{{onb.registration.subtitle}}"
+        },
+        {
+          "t": "field",
+          "hint": "{{onb.phone.hint}}",
+          "fieldId": "phoneNumber",
+          "label": "{{onb.phone.label}}",
+          "required": "yes",
+          "ui": "text",
+          "placeholder": "9XX XXX XXX",
+          "prefix": "🇨🇩 +243"
+        },
+        {
+          "t": "field",
+          "fieldId": "email",
+          "label": "{{onb.email.label}}",
+          "required": "yes",
+          "ui": "email",
+          "placeholder": "nom@exemple.cd"
+        },
+        {
+          "t": "field",
+          "hint": "{{onb.password.hint}}",
+          "label": "{{onb.password.label}}",
+          "required": "yes",
+          "ui": "password",
+          "placeholder": "••••••••"
+        },
+        {
+          "t": "check",
+          "text": "{{onb.terms.accept}} {{onb.terms.conditions}} {{onb.terms.and}} {{onb.terms.privacy}} Switsh.",
+          "fieldId": "termsAccepted",
+          "checked": true
+        },
+        {
+          "t": "cta",
+          "children": [
+            {
+              "t": "button",
+              "text": "{{onb.registration.send_code}}",
+              "style": "primary",
+              "to": "onb-otp"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "onb-otp",
+      "group": "onboarding",
+      "title": "{{onb.otp.screen_title}}",
+      "subtitle": "Étape de vérification de l'écran « Inscription »",
+      "chrome": "sub",
+      "step": [
+        2,
+        5
+      ],
+      "bonus": true,
+      "blocks": [
+        {
+          "t": "title",
+          "text": "{{onb.otp.title}}"
+        },
+        {
+          "t": "subtitle",
+          "text": "{{onb.otp.subtitle}} +243 9XX XXX XXX"
+        },
+        {
+          "t": "field",
+          "label": "{{onb.otp.label}}",
+          "required": "yes",
+          "ui": "otp",
+          "length": 6
+        },
+        {
+          "t": "text",
+          "text": "{{onb.otp.expiry}} 04:12 · {{onb.otp.attempts}}"
+        },
+        {
+          "t": "notice",
+          "kind": "info",
+          "icon": "shield",
+          "text": "{{onb.otp.notice}}"
+        },
+        {
+          "t": "cta",
+          "children": [
+            {
+              "t": "button",
+              "text": "{{onb.otp.verify}}",
+              "style": "primary",
+              "to": "onb-auth-security"
+            },
+            {
+              "t": "button",
+              "text": "{{onb.otp.resend}}",
+              "style": "ghost",
+              "small": true,
+              "action": "resend"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "onb-auth-security",
+      "group": "onboarding",
+      "title": "{{onb.security.screen_title}}",
+      "subtitle": "Écran « Authentification & sécurité »",
+      "chrome": "sub",
+      "step": [
+        3,
+        5
+      ],
+      "blocks": [
+        {
+          "t": "title",
+          "text": "{{onb.security.title}}"
+        },
+        {
+          "t": "subtitle",
+          "text": "{{onb.security.subtitle}}"
+        },
+        {
+          "t": "field",
+          "hint": "{{onb.security.pin_hint}}",
+          "label": "{{onb.security.create_pin}}",
+          "required": "yes",
+          "ui": "password",
+          "placeholder": "••••••••"
+        },
+        {
+          "t": "field",
+          "label": "{{onb.security.confirm_pin}}",
+          "required": "yes",
+          "ui": "password",
+          "placeholder": "••••••••"
+        },
+        {
+          "t": "card",
+          "children": [
+            {
+              "t": "field",
+              "ui": "toggle",
+              "placeholder": "{{onb.security.face_id_unlock}}",
+              "on": true,
+              "required": "no"
+            },
+            {
+              "t": "field",
+              "ui": "toggle",
+              "placeholder": "{{onb.security.fingerprint_unlock}}",
+              "on": false,
+              "required": "no"
+            }
+          ]
+        },
+        {
+          "t": "notice",
+          "kind": "success",
+          "icon": "shield",
+          "text": "{{onb.security.biometric_notice}}"
+        },
+        {
+          "t": "cta",
+          "children": [
+            {
+              "t": "button",
+              "text": "{{onb.security.activate}}",
+              "style": "primary",
+              "to": "onb-profile-select"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "onb-profile-select",
+      "group": "onboarding",
+      "title": "{{onb.profile.screen_title}}",
+      "subtitle": "Écran « Sélection du profil client »",
+      "chrome": "sub",
+      "step": [
+        4,
+        5
+      ],
+      "blocks": [
+        {
+          "t": "title",
+          "text": "{{onb.profile.title}}"
+        },
+        {
+          "t": "subtitle",
+          "text": "{{onb.profile.subtitle}}"
+        },
+        {
+          "t": "choice",
+          "icon": "user",
+          "title": "{{onb.profile.personal}}",
+          "sub": "{{onb.profile.personal_sub}}",
+          "selected": true
+        },
+        {
+          "t": "choice",
+          "icon": "building",
+          "title": "{{onb.profile.business}}",
+          "sub": "{{onb.profile.business_sub}}",
+          "selected": false
+        },
+        {
+          "t": "field",
+          "label": "{{onb.profile.country}}",
+          "required": "yes",
+          "ui": "select",
+          "options": [
+            "{{onb.country.dr_congo}}",
+            "{{onb.country.other}}"
+          ]
+        },
+        {
+          "t": "cta",
+          "children": [
+            {
+              "t": "button",
+              "text": "{{common.continue}}",
+              "style": "primary",
+              "to": "onb-id-particulier",
+              "toChoice": [
+                "onb-id-particulier",
+                "onb-kyb"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "onb-id-particulier",
+      "group": "onboarding",
+      "title": "{{onb.identity.screen_title}}",
+      "subtitle": "Écran « Pièce d'identité — Particulier »",
+      "chrome": "sub",
+      "step": [
+        5,
+        5
+      ],
+      "blocks": [
+        {
+          "t": "title",
+          "text": "{{onb.identity.title}}"
+        },
+        {
+          "t": "subtitle",
+          "text": "{{onb.identity.subtitle}}"
+        },
+        {
+          "t": "field",
+          "label": "{{onb.identity.document_type}}",
+          "required": "yes",
+          "ui": "select",
+          "options": [
+            "CENI",
+            "ONIP / NIN",
+            "{{onb.identity.passport}}",
+            "{{onb.identity.resident_card}}"
+          ]
+        },
+        {
+          "t": "field",
+          "label": "{{onb.identity.document_number}}",
+          "required": "yes",
+          "ui": "text",
+          "placeholder": "{{onb.identity.document_example}}"
+        },
+        {
+          "t": "fieldrow",
+          "children": [
+            {
+              "t": "field",
+              "label": "{{onb.identity.issue_date}}",
+              "required": "yes",
+              "ui": "date"
+            },
+            {
+              "t": "field",
+              "label": "{{onb.identity.expiry_date}}",
+              "required": "yes",
+              "ui": "date"
+            }
+          ]
+        },
+        {
+          "t": "section",
+          "text": "{{onb.identity.documents_section}}"
+        },
+        {
+          "t": "field",
+          "ui": "file",
+          "icon": "checkCircle",
+          "title": "{{onb.identity.front_captured}}",
+          "sub": "{{onb.identity.ocr_sharpness}}",
+          "done": true,
+          "required": "no"
+        },
+        {
+          "t": "field",
+          "label": "{{onb.identity.back_photo}}",
+          "required": "cond",
+          "ui": "file",
+          "icon": "camera",
+          "title": "{{onb.identity.take_back_photo}}",
+          "sub": "{{common.file_formats}}",
+          "done": false
+        },
+        {
+          "t": "field",
+          "label": "{{onb.identity.liveness_selfie}}",
+          "required": "yes",
+          "ui": "file",
+          "icon": "face",
+          "title": "{{onb.identity.start_liveness}}",
+          "sub": "{{common.file_formats}}",
+          "done": false
+        },
+        {
+          "t": "cta",
+          "children": [
+            {
+              "t": "button",
+              "text": "{{onb.identity.validate}}",
+              "style": "primary",
+              "to": "onb-infos-perso"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "onb-infos-perso",
+      "group": "onboarding",
+      "title": "{{onb.personal.screen_title}}",
+      "subtitle": "Écran « Informations personnelles »",
+      "chrome": "sub",
+      "blocks": [
+        {
+          "t": "title",
+          "text": "{{onb.personal.title}}"
+        },
+        {
+          "t": "subtitle",
+          "text": "{{onb.personal.subtitle}}"
+        },
+        {
+          "t": "fieldrow",
+          "children": [
+            {
+              "t": "field",
+              "label": "{{onb.personal.last_name}}",
+              "required": "yes",
+              "ui": "text",
+              "placeholder": "KABUYA",
+              "fieldId": "surname"
+            },
+            {
+              "t": "field",
+              "label": "{{onb.personal.first_name}}",
+              "required": "yes",
+              "ui": "text",
+              "placeholder": "Mireille",
+              "fieldId": "givenNames"
+            }
+          ]
+        },
+        {
+          "t": "fieldrow",
+          "children": [
+            {
+              "t": "field",
+              "label": "{{onb.personal.birth_date}}",
+              "required": "yes",
+              "ui": "date"
+            },
+            {
+              "t": "field",
+              "label": "{{onb.personal.gender}}",
+              "required": "yes",
+              "ui": "select",
+              "options": [
+                "{{onb.gender.male}}",
+                "{{onb.gender.female}}"
+              ]
+            }
+          ]
+        },
+        {
+          "t": "field",
+          "label": "{{onb.personal.birth_place}}",
+          "required": "yes",
+          "ui": "text",
+          "placeholder": "{{onb.example.kinshasa}}"
+        },
+        {
+          "t": "field",
+          "label": "{{onb.personal.nationality}}",
+          "required": "yes",
+          "ui": "select",
+          "options": [
+            "{{onb.nationality.congolese}}",
+            "{{onb.country.other}}"
+          ]
+        },
+        {
+          "t": "field",
+          "label": "{{onb.personal.address}}",
+          "required": "yes",
+          "ui": "text",
+          "placeholder": "{{onb.example.address}}"
+        },
+        {
+          "t": "field",
+          "label": "{{onb.personal.city}}",
+          "required": "yes",
+          "ui": "text",
+          "placeholder": "{{onb.example.city}}"
+        },
+        {
+          "t": "field",
+          "label": "{{onb.personal.profession}}",
+          "required": "yes",
+          "ui": "text",
+          "placeholder": "{{onb.example.profession}}"
+        },
+        {
+          "t": "field",
+          "label": "{{onb.personal.income_source}}",
+          "required": "yes",
+          "ui": "select",
+          "options": [
+            "{{onb.income.salary}}",
+            "{{onb.income.business}}",
+            "{{onb.country.other}}"
+          ]
+        },
+        {
+          "t": "field",
+          "label": "{{onb.personal.monthly_income}}",
+          "required": "no",
+          "ui": "number",
+          "placeholder": "0"
+        },
+        {
+          "t": "cta",
+          "children": [
+            {
+              "t": "button",
+              "text": "{{common.continue}}",
+              "style": "primary",
+              "to": "onb-justif-domicile"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "onb-justif-domicile",
+      "group": "onboarding",
+      "title": "{{onb.address_proof.screen_title}}",
+      "subtitle": "Écran « Justificatif de domicile »",
+      "chrome": "sub",
+      "blocks": [
+        {
+          "t": "title",
+          "text": "{{onb.address_proof.title}}"
+        },
+        {
+          "t": "subtitle",
+          "text": "{{onb.address_proof.subtitle}}"
+        },
+        {
+          "t": "field",
+          "label": "{{onb.address_proof.type}}",
+          "required": "yes",
+          "ui": "select",
+          "options": [
+            "{{onb.address_proof.residence}}",
+            "{{onb.address_proof.utility_bill}}",
+            "{{onb.address_proof.geolocation}}",
+            "{{onb.address_proof.honor_declaration}}"
+          ]
+        },
+        {
+          "t": "field",
+          "hint": "{{onb.address_proof.age_hint}}",
+          "label": "{{onb.identity.issue_date}}",
+          "required": "yes",
+          "ui": "date"
+        },
+        {
+          "t": "field",
+          "label": "{{onb.address_proof.scanned_document}}",
+          "required": "cond",
+          "ui": "file",
+          "icon": "file",
+          "title": "{{onb.address_proof.upload_hint}}",
+          "sub": "{{common.file_formats}}",
+          "done": false
+        },
+        {
+          "t": "card",
+          "children": [
+            {
+              "t": "row",
+              "card": true,
+              "icon": "globe",
+              "title": "{{onb.address_proof.geolocation}}",
+              "sub": "{{onb.address_proof.alternative}}",
+              "trailing": {
+                "kind": "toggle",
+                "on": false
+              }
+            }
+          ]
+        },
+        {
+          "t": "cta",
+          "children": [
+            {
+              "t": "button",
+              "text": "{{onb.address_proof.submit}}",
+              "style": "primary",
+              "to": "onb-status"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "onb-kyb",
+      "group": "onboarding",
+      "title": "{{onb.business.screen_title}}",
+      "subtitle": "Écran « Entreprise / PME (KYB) »",
+      "chrome": "sub",
+      "blocks": [
+        {
+          "t": "title",
+          "text": "{{onb.business.title}}"
+        },
+        {
+          "t": "subtitle",
+          "text": "{{onb.business.subtitle}}"
+        },
+        {
+          "t": "field",
+          "label": "{{onb.business.company_name}}",
+          "required": "yes",
+          "ui": "text",
+          "placeholder": "Switsh Trading SARL"
+        },
+        {
+          "t": "fieldrow",
+          "children": [
+            {
+              "t": "field",
+              "label": "{{onb.business.rccm}}",
+              "required": "yes",
+              "ui": "text"
+            },
+            {
+              "t": "field",
+              "label": "NIF",
+              "required": "yes",
+              "ui": "text"
+            }
+          ]
+        },
+        {
+          "t": "field",
+          "label": "{{onb.business.legal_form}}",
+          "required": "yes",
+          "ui": "select",
+          "options": [
+            "SARL",
+            "SA",
+            "{{onb.business.sole_proprietorship}}",
+            "{{onb.country.other}}"
+          ]
+        },
+        {
+          "t": "field",
+          "label": "{{onb.business.industry}}",
+          "required": "yes",
+          "ui": "select",
+          "options": [
+            "{{onb.business.general_trade}}",
+            "{{onb.business.import_export}}",
+            "{{onb.business.services}}",
+            "{{onb.business.agri_food}}",
+            "{{onb.country.other}}"
+          ]
+        },
+        {
+          "t": "field",
+          "label": "{{onb.business.registered_address}}",
+          "required": "yes",
+          "ui": "text"
+        },
+        {
+          "t": "section",
+          "text": "{{onb.business.representatives}}"
+        },
+        {
+          "t": "field",
+          "label": "{{onb.business.representative_name}}",
+          "required": "yes",
+          "ui": "text"
+        },
+        {
+          "t": "field",
+          "ui": "file",
+          "icon": "file",
+          "title": "{{onb.business.representative_id}}",
+          "sub": "{{onb.business.accepted_ids}}",
+          "done": false,
+          "required": "no"
+        },
+        {
+          "t": "card",
+          "children": [
+            {
+              "t": "row",
+              "card": true,
+              "lead": "MK",
+              "title": "Mireille Kabuya",
+              "sub": "{{onb.business.ubo}} · 60%",
+              "trailing": {
+                "kind": "badge",
+                "text": "{{common.verified}}",
+                "style": "badge-success"
+              }
+            }
+          ]
+        },
+        {
+          "t": "button",
+          "text": "{{onb.business.add_ubo}}",
+          "style": "secondary",
+          "small": true,
+          "icon": "plus"
+        },
+        {
+          "t": "cta",
+          "children": [
+            {
+              "t": "button",
+              "text": "{{onb.business.submit}}",
+              "style": "primary",
+              "to": "onb-status"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "onb-status",
+      "group": "onboarding",
+      "title": "{{onb.status.screen_title}}",
+      "subtitle": "Écran complémentaire (UX) — suivi du tiering KYC",
+      "chrome": "sub",
+      "bonus": true,
+      "blocks": [
+        {
+          "t": "hero",
+          "icon": "checkCircle",
+          "title": "{{onb.status.title}}",
+          "sub": "{{onb.status.subtitle}}"
+        },
+        {
+          "t": "card",
+          "children": [
+            {
+              "t": "row",
+              "title": "{{onb.status.kyc_status}}",
+              "sub": "{{onb.status.final_decision}}",
+              "trailing": {
+                "kind": "badge",
+                "text": "VERIFIED",
+                "style": "badge-success"
+              }
+            },
+            {
+              "t": "row",
+              "title": "{{onb.status.assigned_level}}",
+              "sub": "{{onb.status.limits_features}}",
+              "trailing": {
+                "kind": "badge",
+                "text": "{{onb.status.level_two}}",
+                "style": "badge-usd"
+              }
+            },
+            {
+              "t": "row",
+              "title": "{{onb.status.aml_screening}}",
+              "sub": "{{onb.status.screening_lists}}",
+              "trailing": {
+                "kind": "badge",
+                "text": "CLEAR",
+                "style": "badge-success"
+              }
+            }
+          ]
+        },
+        {
+          "t": "notice",
+          "kind": "warn",
+          "icon": "alert",
+          "text": "{{onb.status.address_proof_notice}}"
+        },
+        {
+          "t": "cta",
+          "children": [
+            {
+              "t": "button",
+              "text": "{{onb.status.open_account}}",
+              "style": "primary",
+              "to": "bank-accounts"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -111,7 +111,7 @@ for(const s of SCREENS){
   const sc={id:s.id,group:s.group,title:s.title,subtitle:s.subtitle,chrome:s.chrome,tab:s.tab,step:s.step,bonus:s.bonus,blocks:[]};
   const k=kids(root);
   if(s.id==='start-splash'){sc.blocks.push({t:'splash'});out.push(clean(sc));continue;}
-  if(s.id==='start-unlock'){sc.blocks.push({t:'pinpad',name:'Mireille',title:'Bon retour, Mireille',sub:txt(root.querySelector('.block-sub')),forgot:'Code PIN oublié ?'});out.push(clean(sc));continue;}
+  if(s.id==='start-unlock'){sc.blocks.push({t:'pinpad',title:'Bon retour',sub:txt(root.querySelector('.block-sub')),forgot:'Code PIN oublié ?'});out.push(clean(sc));continue;}
   const langRows=k.filter(x=>has(x,'language-row'));
   for(const e of k){
     if(has(e,'language-row')){if(e===langRows[0])sc.blocks.push({t:'languages',items:langRows.map(r=>({name:txt(r.querySelector('.native')),code:txt(r.querySelector('.code'))}))});continue;}

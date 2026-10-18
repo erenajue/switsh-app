@@ -176,8 +176,8 @@ SCREENS.push({
     <h1 class="block-title">${L('onb.personal.title', 'Vos informations')}</h1>
     <p class="block-sub">${L('onb.personal.subtitle', 'Pré-remplies depuis votre pièce d\'identité')}</p>
     <div style="display:flex;gap:var(--space-3);">
-      <div style="flex:1;">${renderField(F({ label: L('onb.personal.last_name', 'Nom'), ui: 'text', required: 'yes', placeholder: 'KABUYA' }))}</div>
-      <div style="flex:1;">${renderField(F({ label: L('onb.personal.first_name', 'Prénom(s)'), ui: 'text', required: 'yes', placeholder: 'Mireille' }))}</div>
+      <div style="flex:1;">${renderField(F({ label: L('onb.personal.last_name', 'Nom'), ui: 'text', required: 'yes', placeholder: 'KABUYA', fieldId: 'surname' }))}</div>
+      <div style="flex:1;">${renderField(F({ label: L('onb.personal.first_name', 'Prénom(s)'), ui: 'text', required: 'yes', placeholder: 'Mireille', fieldId: 'givenNames' }))}</div>
     </div>
     <div style="display:flex;gap:var(--space-3);">
       <div style="flex:1;">${renderField(F({ label: L('onb.personal.birth_date', 'Date de naissance'), ui: 'date', required: 'yes' }))}</div>

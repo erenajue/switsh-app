@@ -17,6 +17,8 @@ object ScreenLabels {
         "common.please_wait" to listOf("Veuillez patienter…", "Please wait…", "Zela moke…", "Tala fioti…", "Lindila bulelela…", "Tafadhali subiri…"),
         "common.retry" to listOf("Réessayer", "Retry", "Meka lisusu", "Ngeka diaka", "Meka kabidi", "Jaribu tena"),
         "common.verified" to listOf("Vérifié", "Verified", "Endimisami", "Ndimisama", "Tshikididi", "Imethibitishwa"),
+        "start.unlock.welcome" to listOf("Bon retour, %s", "Welcome back, %s", "Ozongi malamu, %s", "Weyi diaka, %s", "Wewuye kabidi, %s", "Karibu tena, %s"),
+        "start.unlock.welcome.generic" to listOf("Bon retour", "Welcome back", "Ozongi malamu", "Weyi diaka", "Wewuye kabidi", "Karibu tena"),
         "onb.error.email_invalid" to listOf("Veuillez saisir une adresse e-mail valide.", "Please enter a valid email address.", "Komá adrɛsi ya imɛlɛ ya solo.", "Sonika adrɛsi ya imɛlɛ ya kieleka.", "Tshina adrɛsi wa imayili wa kieleka.", "Weka anwani halali ya barua pepe."),
         "onb.error.phone_invalid" to listOf("Veuillez saisir les 9 chiffres du numéro RDC.", "Please enter the 9 digits of the DRC phone number.", "Komá banimero 9 ya telefone ya RDC.", "Sonika banimero 9 ya telefone ya RDC.", "Tshina banimero 9 wa telefone wa RDC.", "Weka tarakimu 9 za nambari ya simu ya DRC."),
         "onb.error.registration_failed.title" to listOf("L'inscription n'a pas pu aboutir.", "Registration could not be completed.", "Komikomisa esilisami te.", "Kusonika nkumbu me lunga ve.", "Kudifundisha kakuena kujika.", "Usajili haukuweza kukamilika."),

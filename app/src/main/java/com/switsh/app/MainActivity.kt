@@ -52,11 +52,12 @@ class MainActivity : AppCompatActivity(), Navigator {
 
     override fun onDestroy() {
         onboardingApi.close()
+        appState.close()
         super.onDestroy()
     }
 
     private companion object {
         // Android emulators reach the host machine through 10.0.2.2, not device-local localhost.
-        const val API_BASE_URL = "http://10.0.2.2:8080"
+        const val API_BASE_URL = "http://localhost:8080"
     }
 }
