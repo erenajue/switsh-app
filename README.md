@@ -35,5 +35,14 @@ This project is provided as a prototype for educational and design demonstration
 
 - Constructed with a `tokenProvider: suspend () -> String`, called on every request (tokens are short-lived, ≤ 7 min) and sent as `Authorization: Bearer`.
 - 10 s connect/request/socket timeouts; HTTPS enforced (HTTP only for loopback hosts).
+- Full request/response debug logging is enabled for `http://localhost:8080/*`; authorization headers are redacted.
 - Writes send `X-Correlation-Id`; application endpoints also send `Idempotency-Key` (auto-generated UUIDs unless supplied).
 - Non-2xx responses throw `OnboardingApiException` carrying the RFC 9457 `Problem` or legacy `error`.
+
+## Personal information
+
+On the "Informations personnelles" screen, Continue sends the form to `OnboardingApiClient.savePersonalProfile` (date converted to ISO, gender/nationality/source of funds mapped to API enums, optional monthly income mapped to an income band). The app only moves on once the profile is saved.
+
+## Unlock
+
+The PIN created on the "Authentification & sécurité" screen is stored as a salted PBKDF2 hash. Without a saved PIN the app never shows the unlock screen: it restarts onboarding at language selection, so a registered user can only connect with a PIN. If the Face ID or fingerprint toggle is on, the platform biometric prompt is shown on startup (unlock screen) and the biometric key is shown on the PIN pad; otherwise the 4-digit PIN is required.

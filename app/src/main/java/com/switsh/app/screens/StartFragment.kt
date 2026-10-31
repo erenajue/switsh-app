@@ -29,6 +29,16 @@ class StartFragment : ScreenFragment() {
         return super.buildPage(personalized)
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (screenId == "start-unlock" && !biometricPromptShown) {
+            biometricPromptShown = true
+            promptBiometricUnlock()
+        }
+    }
+
+    private var biometricPromptShown = false
+
     override fun primary(button: Block, state: ScreenState, onComplete: (Boolean) -> Unit) {
         if (screenId == "start-language") {
             if (!NetworkStatus.hasValidatedInternet(requireContext())) {

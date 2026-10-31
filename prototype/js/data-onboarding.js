@@ -58,6 +58,26 @@ SCREENS.push({
 });
 
 SCREENS.push({
+  id: 'onb-mail-otp',
+  group: 'onboarding',
+  title: L('onb.mail_otp.screen_title', 'Confirmation de l\'e-mail'),
+  subtitle: 'Étape de vérification de l\'adresse e-mail',
+  chrome: 'sub',
+  step: [2, 5],
+  bonus: true,
+  meta: { br: ['BR-ONB-01'], note: 'Vérification de l\'adresse e-mail saisie à l\'inscription ; obligatoire avant la sélection du profil.' },
+  fields: [
+    F({ label: 'Code OTP e-mail', specType: 'Alphanumérique, 64 caractères', ui: 'text', required: 'yes', hint: 'Code reçu par e-mail' }),
+  ],
+  body: () => `
+    <h1 class="block-title">${L('onb.mail_otp.title', 'Confirmez votre e-mail')}</h1>
+    <p class="block-sub">${L('onb.mail_otp.subtitle', 'Un code de vérification a été envoyé à votre adresse e-mail')}</p>
+    ${renderField(F({ label: L('onb.mail_otp.label', 'Code de vérification e-mail'), ui: 'text', required: 'yes', fieldId: 'emailCode', maxLength: 64 }))}
+    <div class="sticky-cta"><button class="btn btn-primary">${L('onb.otp.verify', 'Vérifier')}</button><div style="text-align:center;margin-top:var(--space-3);"><button class="btn-ghost btn-sm" style="color:var(--color-primary);">${L('onb.otp.resend', 'Renvoyer le code')}</button></div></div>
+  `,
+});
+
+SCREENS.push({
   id: 'onb-auth-security',
   group: 'onboarding',
   title: L('onb.security.screen_title', 'Authentification & sécurité'),
@@ -74,11 +94,11 @@ SCREENS.push({
   body: () => `
     <h1 class="block-title">${L('onb.security.title', 'Sécurisez votre compte')}</h1>
     <p class="block-sub">${L('onb.security.subtitle', 'Définissez un code PIN et activez la biométrie')}</p>
-    ${renderField(F({ label: L('onb.security.create_pin', 'Créer un code PIN'), ui: 'password', required: 'yes', hint: L('onb.security.pin_hint', '4 ou 6 chiffres, jamais de séquence triviale') }))}
-    ${renderField(F({ label: L('onb.security.confirm_pin', 'Confirmer le code PIN'), ui: 'password', required: 'yes' }))}
+    ${renderField(F({ label: L('onb.security.create_pin', 'Créer un code PIN'), ui: 'password', required: 'yes', fieldId: 'pin', hint: L('onb.security.pin_hint', '4 ou 6 chiffres, jamais de séquence triviale') }))}
+    ${renderField(F({ label: L('onb.security.confirm_pin', 'Confirmer le code PIN'), ui: 'password', required: 'yes', fieldId: 'confirmPin' }))}
     <div class="card" style="margin-top:var(--space-2);">
-      ${renderField(F({ label: L('onb.security.face_id', 'Face ID'), ui: 'toggle', on: true, placeholder: L('onb.security.face_id_unlock', 'Utiliser Face ID pour déverrouiller') }))}
-      ${renderField(F({ label: L('onb.security.fingerprint', 'Empreinte digitale'), ui: 'toggle', on: false, placeholder: L('onb.security.fingerprint_unlock', 'Utiliser l\'empreinte digitale') }))}
+      ${renderField(F({ label: L('onb.security.face_id', 'Face ID'), ui: 'toggle', on: true, fieldId: 'faceIdUnlock', placeholder: L('onb.security.face_id_unlock', 'Utiliser Face ID pour déverrouiller') }))}
+      ${renderField(F({ label: L('onb.security.fingerprint', 'Empreinte digitale'), ui: 'toggle', on: false, fieldId: 'fingerprintUnlock', placeholder: L('onb.security.fingerprint_unlock', 'Utiliser l\'empreinte digitale') }))}
     </div>
     <div class="notice-box notice-success">${ICONS.shield}<span>${L('onb.security.biometric_notice', 'Biométrie détectée automatiquement : Face ID disponible sur cet appareil.')}</span></div>
     <div class="sticky-cta"><button class="btn btn-primary">${L('onb.security.activate', 'Activer la sécurité')}</button></div>
@@ -102,7 +122,7 @@ SCREENS.push({
     <p class="block-sub">${L('onb.profile.subtitle', 'Ce choix oriente votre parcours de vérification d\'identité')}</p>
     <div class="choice-card sel"><div class="icon">${ICONS.user}</div><div class="txt"><strong>${L('onb.profile.personal', 'Particulier')}</strong><span>${L('onb.profile.personal_sub', 'Compte personnel bidevises USD/CDF')}</span></div></div>
     <div class="choice-card"><div class="icon">${ICONS.building}</div><div class="txt"><strong>${L('onb.profile.business', 'Entreprise / PME')}</strong><span>${L('onb.profile.business_sub', 'Compte société — dossier KYB requis')}</span></div></div>
-    ${renderField(F({ label: L('onb.profile.country', 'Pays de résidence fiscale'), ui: 'select', required: 'yes', options: [L('onb.country.dr_congo', 'République démocratique du Congo'), L('onb.country.other', 'Autre pays')] }))}
+    ${renderField(F({ label: L('onb.profile.country', 'Pays de résidence fiscale'), ui: 'select', required: 'yes', fieldId: 'taxResidence', options: [L('onb.country.dr_congo', 'République démocratique du Congo'), L('onb.country.other', 'Autre pays')] }))}
     <div class="sticky-cta"><button class="btn btn-primary">${L('common.continue', 'Continuer')}</button></div>
   `,
 });

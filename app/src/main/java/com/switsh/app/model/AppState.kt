@@ -2,7 +2,12 @@ package com.switsh.app.model
 
 import android.content.Context
 import com.switsh.app.data.LastConnectionDatabase
+import android.util.Base64
+import java.security.MessageDigest
+import java.security.SecureRandom
 import java.util.UUID
+import javax.crypto.SecretKeyFactory
+import javax.crypto.spec.PBEKeySpec
 
 /** First-connection / registration state kept on the device. */
 class AppState(context: Context) {
@@ -43,6 +48,32 @@ class AppState(context: Context) {
         get() = prefs.getBoolean(KEY_ONBOARDING_DONE, false)
         set(value) = prefs.edit().putBoolean(KEY_ONBOARDING_DONE, value).apply()
 
+    val hasPin: Boolean get() = prefs.getString(KEY_PIN_HASH, null) != null
+
+    var biometricUnlockEnabled: Boolean
+        get() = prefs.getBoolean(KEY_BIOMETRIC_UNLOCK, false)
+        set(value) = prefs.edit().putBoolean(KEY_BIOMETRIC_UNLOCK, value).apply()
+
+    /** Stores only a salted PBKDF2 hash of the PIN, never the PIN itself. */
+    fun savePin(pin: String) {
+        val salt = ByteArray(PIN_SALT_BYTES).also { SecureRandom().nextBytes(it) }
+        prefs.edit()
+            .putString(KEY_PIN_SALT, Base64.encodeToString(salt, Base64.NO_WRAP))
+            .putString(KEY_PIN_HASH, Base64.encodeToString(hashPin(pin, salt), Base64.NO_WRAP))
+            .apply()
+    }
+
+    fun verifyPin(pin: String): Boolean {
+        val salt = prefs.getString(KEY_PIN_SALT, null)?.let { Base64.decode(it, Base64.NO_WRAP) } ?: return false
+        val expected = prefs.getString(KEY_PIN_HASH, null)?.let { Base64.decode(it, Base64.NO_WRAP) } ?: return false
+        return MessageDigest.isEqual(expected, hashPin(pin, salt))
+    }
+
+    private fun hashPin(pin: String, salt: ByteArray): ByteArray =
+        SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
+            .generateSecret(PBEKeySpec(pin.toCharArray(), salt, PIN_ITERATIONS, PIN_HASH_BITS))
+            .encoded
+
     val lastConnectedName: String?
         get() = lastConnectionDatabase.getLastConnectedName()
 
@@ -67,5 +98,11 @@ class AppState(context: Context) {
         private const val KEY_REGISTRATION_EMAIL = "registration_email"
         private const val KEY_ONBOARDING_ACCESS_TOKEN = "onboarding_access_token"
         private const val KEY_ONBOARDING_DONE = "onboarding_done"
+        private const val KEY_PIN_HASH = "pin_hash"
+        private const val KEY_PIN_SALT = "pin_salt"
+        private const val KEY_BIOMETRIC_UNLOCK = "biometric_unlock_enabled"
+        private const val PIN_SALT_BYTES = 16
+        private const val PIN_ITERATIONS = 120_000
+        private const val PIN_HASH_BITS = 256
     }
 }

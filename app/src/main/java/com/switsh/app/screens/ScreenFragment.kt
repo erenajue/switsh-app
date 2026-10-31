@@ -176,7 +176,39 @@ open class ScreenFragment : Fragment(), RenderActions {
     }
 
     // Placeholder authentication: any complete PIN (or the biometric key) unlocks the demo account.
-    override fun pinEntered() {
+    override fun pinEntered(pin: String?): Boolean {
+        val appState = navigator.appState
+        if (pin == null) {
+            promptBiometricUnlock()
+            return true
+        }
+        if (!appState.hasPin) {
+            navigator.reset("start-language")
+            return false
+        }
+        if (!appState.verifyPin(pin)) {
+            message(ScreenLabels.resolve("{{start.unlock.pin_wrong}}", currentLanguage()).orEmpty())
+            return false
+        }
+        completeUnlock()
+        return true
+    }
+
+    override fun biometricUnlockEnabled(): Boolean =
+        navigator.appState.hasPin && navigator.appState.biometricUnlockEnabled && BiometricUnlock.isAvailable(requireContext())
+
+    protected fun promptBiometricUnlock() {
+        if (!biometricUnlockEnabled() || !navigator.appState.hasPin) return
+        val language = currentLanguage()
+        BiometricUnlock.authenticate(
+            requireContext(),
+            title = ScreenLabels.resolve("{{start.unlock.biometric_title}}", language).orEmpty(),
+            cancel = ScreenLabels.resolve("{{common.cancel}}", language).orEmpty(),
+            onSuccess = { if (isAdded) completeUnlock() },
+        )
+    }
+
+    private fun completeUnlock() {
         navigator.appState.recordSuccessfulConnection()
         navigate("bank-accounts")
     }

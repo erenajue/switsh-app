@@ -30,8 +30,8 @@ class SplashFragment : ScreenFragment() {
 
     private fun firstScreen(): String = with(navigator.appState) {
         when {
-            onboardingDone -> "start-unlock"
-            !languageChosen -> "start-language"
+            onboardingDone && hasPin -> "start-unlock"
+            !hasPin || !languageChosen -> "start-language"
             else -> "onb-inscription"
         }
     }

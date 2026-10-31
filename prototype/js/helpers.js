@@ -11,7 +11,7 @@ function L(key, fallback) {
 /* Field descriptor factory — one object powers both the mobile UI input AND the BRD spec table row. */
 function F(opts) {
   return Object.assign({
-    label: '', specType: 'Texte', ui: 'text', required: 'yes', hint: '', options: [], placeholder: '', icon: null, prefix: null, fieldId: null,
+    label: '', specType: 'Texte', ui: 'text', required: 'yes', hint: '', options: [], placeholder: '', icon: null, prefix: null, fieldId: null, maxLength: null,
   }, opts);
 }
 
@@ -38,7 +38,7 @@ function renderField(f) {
     case 'number':
     case 'date': {
       const prefix = f.prefix ? `<span class="prefix">${esc(f.prefix)}</span>` : '';
-      control = `<div class="input-group">${prefix}<input class="input ${f.prefix ? 'has-prefix' : ''}" type="${f.ui === 'tel' ? 'text' : f.ui}" placeholder="${esc(f.placeholder)}" ${f.fieldId ? `data-field="${esc(f.fieldId)}"` : ''} /></div>`;
+      control = `<div class="input-group">${prefix}<input class="input ${f.prefix ? 'has-prefix' : ''}" type="${f.ui === 'tel' ? 'text' : f.ui}" placeholder="${esc(f.placeholder)}" ${f.maxLength ? `maxlength="${f.maxLength}"` : ''} ${f.fieldId ? `data-field="${esc(f.fieldId)}"` : ''} /></div>`;
       break;
     }
     case 'password':
@@ -68,7 +68,7 @@ function renderField(f) {
     default:
       control = `<div class="input">${esc(f.placeholder)}</div>`;
   }
-  if (f.ui === 'toggle') return `<div class="field">${control}${hint}</div>`;
+  if (f.ui === 'toggle') return `<div class="field" ${f.fieldId ? `data-field="${esc(f.fieldId)}"` : ''}>${control}${hint}</div>`;
   return `<div class="field">${fieldLabelHtml(f)}${control}${hint}</div>`;
 }
 

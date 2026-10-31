@@ -229,6 +229,54 @@
               "t": "button",
               "text": "{{onb.otp.verify}}",
               "style": "primary",
+              "to": "onb-mail-otp"
+            },
+            {
+              "t": "button",
+              "text": "{{onb.otp.resend}}",
+              "style": "ghost",
+              "small": true,
+              "action": "resend"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "onb-mail-otp",
+      "group": "onboarding",
+      "title": "{{onb.mail_otp.screen_title}}",
+      "subtitle": "Étape de vérification de l'adresse e-mail",
+      "chrome": "sub",
+      "step": [
+        2,
+        5
+      ],
+      "bonus": true,
+      "blocks": [
+        {
+          "t": "title",
+          "text": "{{onb.mail_otp.title}}"
+        },
+        {
+          "t": "subtitle",
+          "text": "{{onb.mail_otp.subtitle}}"
+        },
+        {
+          "t": "field",
+          "label": "{{onb.mail_otp.label}}",
+          "required": "yes",
+          "ui": "text",
+          "fieldId": "emailCode",
+          "length": 64
+        },
+        {
+          "t": "cta",
+          "children": [
+            {
+              "t": "button",
+              "text": "{{onb.otp.verify}}",
+              "style": "primary",
               "to": "onb-auth-security"
             },
             {
@@ -267,14 +315,16 @@
           "label": "{{onb.security.create_pin}}",
           "required": "yes",
           "ui": "password",
-          "placeholder": "••••••••"
+          "placeholder": "••••••••",
+          "fieldId": "pin"
         },
         {
           "t": "field",
           "label": "{{onb.security.confirm_pin}}",
           "required": "yes",
           "ui": "password",
-          "placeholder": "••••••••"
+          "placeholder": "••••••••",
+          "fieldId": "confirmPin"
         },
         {
           "t": "card",
@@ -284,14 +334,16 @@
               "ui": "toggle",
               "placeholder": "{{onb.security.face_id_unlock}}",
               "on": true,
-              "required": "no"
+              "required": "no",
+              "fieldId": "faceIdUnlock"
             },
             {
               "t": "field",
               "ui": "toggle",
               "placeholder": "{{onb.security.fingerprint_unlock}}",
               "on": false,
-              "required": "no"
+              "required": "no",
+              "fieldId": "fingerprintUnlock"
             }
           ]
         },
@@ -352,6 +404,7 @@
           "label": "{{onb.profile.country}}",
           "required": "yes",
           "ui": "select",
+          "fieldId": "taxResidence",
           "options": [
             "{{onb.country.dr_congo}}",
             "{{onb.country.other}}"
@@ -517,12 +570,14 @@
             {
               "t": "field",
               "label": "{{onb.personal.birth_date}}",
+              "fieldId": "dateOfBirth",
               "required": "yes",
               "ui": "date"
             },
             {
               "t": "field",
               "label": "{{onb.personal.gender}}",
+              "fieldId": "sex",
               "required": "yes",
               "ui": "select",
               "options": [
@@ -535,6 +590,7 @@
         {
           "t": "field",
           "label": "{{onb.personal.birth_place}}",
+              "fieldId": "placeOfBirth",
           "required": "yes",
           "ui": "text",
           "placeholder": "{{onb.example.kinshasa}}"
@@ -542,6 +598,7 @@
         {
           "t": "field",
           "label": "{{onb.personal.nationality}}",
+              "fieldId": "nationality",
           "required": "yes",
           "ui": "select",
           "options": [
@@ -552,6 +609,7 @@
         {
           "t": "field",
           "label": "{{onb.personal.address}}",
+              "fieldId": "address",
           "required": "yes",
           "ui": "text",
           "placeholder": "{{onb.example.address}}"
@@ -559,6 +617,7 @@
         {
           "t": "field",
           "label": "{{onb.personal.city}}",
+              "fieldId": "city",
           "required": "yes",
           "ui": "text",
           "placeholder": "{{onb.example.city}}"
@@ -566,6 +625,7 @@
         {
           "t": "field",
           "label": "{{onb.personal.profession}}",
+              "fieldId": "occupation",
           "required": "yes",
           "ui": "text",
           "placeholder": "{{onb.example.profession}}"
@@ -573,6 +633,7 @@
         {
           "t": "field",
           "label": "{{onb.personal.income_source}}",
+              "fieldId": "sourceOfFunds",
           "required": "yes",
           "ui": "select",
           "options": [
@@ -584,6 +645,7 @@
         {
           "t": "field",
           "label": "{{onb.personal.monthly_income}}",
+              "fieldId": "monthlyIncome",
           "required": "no",
           "ui": "number",
           "placeholder": "0"

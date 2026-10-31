@@ -16,6 +16,7 @@ function fieldBlock(el){
   const hint=k.find(x=>has(x,'hint'));
   const b={t:'field',hint:hint&&txt(hint)};
   b.fieldId = (el.querySelector('input,textarea')||el).getAttribute('data-field') || undefined;
+  const maxLen=parseInt((el.querySelector('input')||el).getAttribute('maxlength'),10);if(maxLen)b.length=maxLen;
   if(label){b.label=own(label);const sp=[...label.querySelectorAll('span')];
     const s=sp.map(x=>txt(x)).join(' ');
     b.required=sp.some(x=>has(x,'req'))?'yes':/LECTURE/.test(s)?'ro':/SI APPLICABLE/.test(s)?'cond':'no';}
@@ -123,7 +124,7 @@ for(const s of SCREENS){
   out.push(clean(sc));
 }
 
-const NEXT={'onb-inscription':'onb-otp','onb-otp':'onb-auth-security','onb-auth-security':'onb-profile-select','onb-profile-select':'onb-id-particulier','onb-id-particulier':'onb-infos-perso','onb-infos-perso':'onb-justif-domicile','onb-justif-domicile':'onb-status','onb-kyb':'onb-status','onb-status':'bank-accounts','start-language':'onb-inscription','start-offline':'start-splash'};
+const NEXT={'onb-inscription':'onb-otp','onb-otp':'onb-mail-otp','onb-mail-otp':'onb-auth-security','onb-auth-security':'onb-profile-select','onb-profile-select':'onb-id-particulier','onb-id-particulier':'onb-infos-perso','onb-infos-perso':'onb-justif-domicile','onb-justif-domicile':'onb-status','onb-kyb':'onb-status','onb-status':'bank-accounts','start-language':'onb-inscription','start-offline':'start-splash'};
 const QUICK={'Envoyer':'pay-p2p','Convertir':'pay-converter','Payer QR':'pay-merchant','Sous-compte':'bank-subaccount'};
 const ROWS={'Langue':'settings-language','Sécurité & authentification':'onb-auth-security','Aide & support':'support-chatbot','Mireille Kabuya':'onb-status'};
 const link=(icon,title,to,sub)=>({t:'row',icon,title,sub,trailing:{kind:'chevron'},to});
@@ -136,7 +137,7 @@ const MENU={
 for(const sc of out){
   const walk=bs=>{for(const b of bs){
     if(b.t==='cta'){const pb=b.children.find(x=>x.t==='button'&&x.style==='primary');if(pb&&NEXT[sc.id])pb.to=NEXT[sc.id];if(sc.id==='onb-profile-select')pb.toChoice=['onb-id-particulier','onb-kyb'];
-      const g=b.children.find(x=>x.style==='ghost');if(g&&sc.id==='onb-otp')g.action='resend';}
+      const g=b.children.find(x=>x.style==='ghost');if(g&&(sc.id==='onb-otp'||sc.id==='onb-mail-otp'))g.action='resend';}
     if(b.t==='quick')b.items.forEach(i=>i.to=QUICK[i.label]);
     if(b.t==='sectionlink'&&b.link==='Tout voir')b.to='bank-history';
     if(b.t==='row'&&sc.id==='settings-profile'&&ROWS[b.title])b.to=ROWS[b.title];

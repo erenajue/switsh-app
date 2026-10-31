@@ -50,7 +50,9 @@ interface RenderActions {
     fun primary(button: Block, state: ScreenState, onComplete: (Boolean) -> Unit = {})
     fun action(action: String)
     fun message(text: String)
-    fun pinEntered()
+    /** [pin] is null when the user unlocks with the biometric key. Returns false when the attempt was rejected. */
+    fun pinEntered(pin: String? = null): Boolean
+    fun biometricUnlockEnabled(): Boolean
     fun currentLanguage(): String
 }
 
@@ -162,7 +164,15 @@ class BlockRenderer(private val ctx: Context, private val actions: RenderActions
         labels.addView(ui.text(b.label ?: b.placeholder, 14f, bold = true))
         if (!b.hint.isNullOrBlank()) labels.addView(ui.text(b.hint, 12f, R.color.text_muted))
         addView(labels, ui.lp(width = 0, weight = 1f))
-        addView(MaterialSwitch(ctx).apply { isChecked = b.on })
+        addView(
+            MaterialSwitch(ctx).apply {
+                isChecked = b.on
+                b.fieldId?.let { fieldId ->
+                    state.inputValues[fieldId] = isChecked.toString()
+                    setOnCheckedChangeListener { _, checked -> state.inputValues[fieldId] = checked.toString() }
+                }
+            },
+        )
     }
 
     private fun inputBox(b: Block, multiline: Boolean = false): View {
@@ -195,6 +205,10 @@ class BlockRenderer(private val ctx: Context, private val actions: RenderActions
                     }
                 })
                 state.inputValues[fieldId] = text.toString()
+            }
+            if (b.ui == "text" && b.length > 0) {
+                filters = arrayOf(android.text.InputFilter.LengthFilter(b.length))
+                inputType = inputType or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
             }
             if (multiline) {
                 minLines = 3
@@ -246,6 +260,15 @@ class BlockRenderer(private val ctx: Context, private val actions: RenderActions
         frame.addView(Spinner(ctx).apply {
             background = null
             this.adapter = adapter
+            b.fieldId?.let { fieldId ->
+                state.inputValues[fieldId] = "0"
+                onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
+                        state.inputValues[fieldId] = position.toString()
+                    }
+                    override fun onNothingSelected(parent: android.widget.AdapterView<*>?) = Unit
+                }
+            }
         }, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ui.dp(48)))
         frame.addView(
             ui.icon("chevron_down", 18, R.color.text_faint).apply { isClickable = false },
@@ -273,6 +296,7 @@ class BlockRenderer(private val ctx: Context, private val actions: RenderActions
                 override fun beforeTextChanged(s: CharSequence?, st: Int, c: Int, a: Int) = Unit
                 override fun onTextChanged(s: CharSequence?, st: Int, b4: Int, c: Int) = Unit
                 override fun afterTextChanged(s: Editable?) {
+                    state.inputValues[b.fieldId ?: "otp"] = boxes.joinToString("") { it.text.toString() }
                     if (!s.isNullOrEmpty() && index < count - 1) boxes[index + 1].requestFocus()
                 }
             })
@@ -745,10 +769,16 @@ class BlockRenderer(private val ctx: Context, private val actions: RenderActions
         fun digit(d: String) {
             if (entered.length < 4) entered.append(d)
             refreshDots()
-            if (entered.length == 4) actions.pinEntered()
+            if (entered.length == 4) {
+                val accepted = actions.pinEntered(entered.toString())
+                if (!accepted) {
+                    entered.clear()
+                    refreshDots()
+                }
+            }
         }
         val keys: List<View> = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9").map { d -> key(d) { digit(d) } } + listOf(
-            key(null, "fingerprint") { actions.pinEntered() },
+            key(null, if (actions.biometricUnlockEnabled()) "fingerprint" else null) { actions.pinEntered(null) },
             key("0") { digit("0") },
             key(null, "chevron_left") { if (entered.isNotEmpty()) entered.deleteCharAt(entered.length - 1); refreshDots() },
         )

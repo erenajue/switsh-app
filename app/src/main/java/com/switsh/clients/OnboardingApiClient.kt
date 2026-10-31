@@ -28,6 +28,9 @@ import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.header
@@ -82,6 +85,20 @@ class OnboardingApiClient(
             connectTimeoutMillis = TIMEOUT_MS
             socketTimeoutMillis = TIMEOUT_MS
         }
+        install(Logging) {
+            logger = object : Logger {
+                override fun log(message: String) {
+                    Log.d(LOG_TAG, message)
+                }
+            }
+            level = LogLevel.ALL
+            sanitizeHeader { header -> header.equals(HttpHeaders.Authorization, ignoreCase = true) }
+            filter { request ->
+                request.url.protocol.name == "http" &&
+                    request.url.host == LOCAL_API_HOST &&
+                    request.url.port == LOCAL_API_PORT
+            }
+        }
         defaultRequest { header(HttpHeaders.Accept, "application/json, application/problem+json") }
     }
 
@@ -99,7 +116,6 @@ class OnboardingApiClient(
         {
             write(token, idempotencyKey, correlationId)
             json(request)
-            logCall("registerApplication", "POST", url.buildString(), headers.entries(), gson.toJson(request))
         }
     }
 
@@ -301,6 +317,8 @@ class OnboardingApiClient(
     private companion object {
         const val LOG_TAG = "Switsh/OnboardingApi"
         const val TIMEOUT_MS = 10_000L
+        const val LOCAL_API_HOST = "localhost"
+        const val LOCAL_API_PORT = 8080
         const val CORRELATION_ID = "X-Correlation-Id"
         const val IDEMPOTENCY_KEY = "Idempotency-Key"
     }
