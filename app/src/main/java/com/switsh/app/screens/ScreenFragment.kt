@@ -1,6 +1,8 @@
 package com.switsh.app.screens
 
+import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -8,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ScrollView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
@@ -33,6 +36,14 @@ open class ScreenFragment : Fragment(), RenderActions {
     protected val logTag: String get() = "Switsh/${javaClass.simpleName}"
     protected open val lightSystemBars: Boolean = true
     private lateinit var ui: UiKit
+
+    /** Files attached on this screen, keyed by the `fieldId` of their file block. */
+    protected val pickedFiles = mutableMapOf<String, Uri>()
+    private var pendingPick: ((Uri?) -> Unit)? = null
+    private val filePicker = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        pendingPick?.invoke(uri)
+        pendingPick = null
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         ui = UiKit(requireContext())
@@ -170,6 +181,24 @@ open class ScreenFragment : Fragment(), RenderActions {
             else -> message(getString(R.string.example_only))
         }
     }
+
+    override fun pickFile(fieldId: String, clear: Boolean, onResult: (String?) -> Unit) {
+        if (clear) {
+            pickedFiles.remove(fieldId)
+            onResult(null)
+            return
+        }
+        pendingPick = { uri ->
+            if (uri != null) pickedFiles[fieldId] = uri
+            onResult(uri?.let(::displayName))
+        }
+        filePicker.launch(arrayOf("image/jpeg", "image/png", "application/pdf"))
+    }
+
+    private fun displayName(uri: Uri): String =
+        requireContext().contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use {
+            if (it.moveToFirst()) it.getString(0) else null
+        } ?: uri.lastPathSegment.orEmpty()
 
     override fun message(text: String) {
         view?.let { Snackbar.make(it, text, Snackbar.LENGTH_SHORT).show() }

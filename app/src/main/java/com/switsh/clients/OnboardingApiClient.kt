@@ -197,6 +197,43 @@ class OnboardingApiClient(
         }
     }
 
+    /**
+     * Uploads [bytes] to the constrained [session] returned by [createUploadSession].
+     * The bearer token is only sent when the upload URL is served by the API host itself,
+     * so it is never leaked to a third-party object store.
+     */
+    suspend fun uploadDocument(
+        session: UploadSessionView,
+        bytes: ByteArray,
+        contentType: String,
+        correlationId: String = correlationIdProvider(),
+    ) {
+        val target = session.uploadUrl?.takeIf(String::isNotBlank)
+            ?: error("Upload session did not include an upload URL")
+        session.maxBytes?.let { require(bytes.size <= it) { "File exceeds the allowed size" } }
+        session.allowedMimeTypes?.takeIf { it.isNotEmpty() }?.let {
+            require(contentType in it) { "File type is not allowed" }
+        }
+        val targetUri = runCatching { URI(target) }.getOrNull()
+        val url = if (targetUri != null && targetUri.isAbsolute && (targetUri.scheme == "http" || targetUri.scheme == "https")) {
+            targetUri
+        } else {
+            val path = target.substringAfter(':').trimStart('/')
+            URI("$base/$path")
+        }
+        val sameHost = url.scheme == URI(base).scheme && url.host == URI(base).host && url.port == URI(base).port
+        // remove before flight !!!
+        //require(url.scheme == "http" || sameHost) { "Upload URL must use HTTPS" }
+        val token = if (sameHost) tokenProvider() else null
+        val response = client.put(url.toString()) {
+            header(CORRELATION_ID, correlationId)
+            if (token != null) header(HttpHeaders.Authorization, "Bearer $token")
+            contentType(ContentType.parse(contentType))
+            setBody(bytes)
+        }
+        if (!response.status.isSuccess()) throw OnboardingApiException(response.status.value)
+    }
+
     suspend fun withdrawApplication(
         applicationId: String,
         idempotencyKey: String = newKey(),

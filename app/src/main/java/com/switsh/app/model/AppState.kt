@@ -87,6 +87,12 @@ class AppState(context: Context) {
         lastConnectionDatabase.recordSuccessfulConnection()
     }
 
+    fun saveCurrentAddress(address: String, latitude: Double, longitude: Double) {
+        lastConnectionDatabase.saveCurrentAddress(address, latitude, longitude)
+    }
+
+    val currentAddress: String? get() = lastConnectionDatabase.getCurrentAddress()
+
     fun close() = lastConnectionDatabase.close()
 
     companion object {

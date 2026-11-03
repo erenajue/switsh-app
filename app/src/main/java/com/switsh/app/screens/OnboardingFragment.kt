@@ -1,6 +1,16 @@
 package com.switsh.app.screens
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.pm.PackageManager
+import android.location.Address
+import android.location.Geocoder
+import android.location.Location
+import android.location.LocationManager
+import android.net.Uri
 import android.util.Patterns
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
@@ -16,6 +26,9 @@ import com.switsh.app.domains.onboarding.RegisterRequest
 import com.switsh.app.domains.onboarding.Sex
 import com.switsh.app.domains.onboarding.SourceOfFunds
 import com.switsh.app.domains.onboarding.TermsRequest
+import com.switsh.app.domains.onboarding.DocumentType
+import com.switsh.app.domains.onboarding.IdentityDocumentRequest
+import com.switsh.app.domains.onboarding.UploadSessionRequest
 import com.switsh.app.domains.onboarding.VerifyContactRequest
 import com.switsh.app.ui.ScreenState
 import kotlinx.coroutines.CancellationException
@@ -26,6 +39,16 @@ import java.util.Locale
 
 /** "Onboarding" section: registration, KYC/KYB steps and verification status. */
 class OnboardingFragment : ScreenFragment() {
+    private class GeoAddress(val address: String, val latitude: Double, val longitude: Double)
+
+    private var geoAddress: GeoAddress? = null
+    private var pendingGeolocation: ((Boolean) -> Unit)? = null
+    private val locationPermission = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grants ->
+        val accept = pendingGeolocation ?: return@registerForActivityResult
+        pendingGeolocation = null
+        if (grants.values.any { it }) locate(accept) else geolocationFailed(accept)
+    }
+
     override fun primary(button: Block, state: ScreenState, onComplete: (Boolean) -> Unit) {
         if (screenId == "onb-infos-perso") {
             navigator.appState.saveProfileName(
@@ -37,6 +60,14 @@ class OnboardingFragment : ScreenFragment() {
         }
         if (screenId == "onb-inscription") {
             register(button, state, onComplete)
+            return
+        }
+        if (screenId == "onb-id-particulier") {
+            attachIdentityDocument(button, state, onComplete)
+            return
+        }
+        if (screenId == "onb-justif-domicile") {
+            submitApplication(button, onComplete)
             return
         }
         if (screenId == "onb-auth-security") {
@@ -194,6 +225,193 @@ class OnboardingFragment : ScreenFragment() {
                 onComplete(false)
             }
         }
+    }
+
+    private fun submitApplication(button: Block, onComplete: (Boolean) -> Unit) {
+        val applicationId = navigator.appState.registrationApplicationId
+        if (applicationId.isNullOrBlank() || !NetworkStatus.hasValidatedInternet(requireContext())) {
+            showMessage("{{onb.network.required.title}}", "{{onb.network.required.message}}")
+            onComplete(false)
+            return
+        }
+        val document = pickedFiles[ADDRESS_DOCUMENT_FIELD]
+        val location = geoAddress.takeIf { document == null }
+        if (document == null && location == null) {
+            showMessage("{{onb.error.address_proof_required}}")
+            onComplete(false)
+            return
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            var uploading = document != null
+            try {
+                withContext(Dispatchers.IO) {
+                    if (document != null) {
+                        uploadFile(applicationId, document, ADDRESS_PROOF_PURPOSE)
+                        uploading = false
+                    } else if (location != null) {
+                        navigator.appState.saveCurrentAddress(location.address, location.latitude, location.longitude)
+                    }
+                    navigator.onboardingApi.submitApplication(applicationId)
+                }
+                navigate(button.to ?: "onb-status")
+                onComplete(true)
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (error: Exception) {
+                Log.w(logTag, "application submission failed (upload=$uploading)", error)
+                showMessage(if (uploading) "{{onb.error.upload_failed}}" else "{{onb.profile.unavailable}}")
+                onComplete(false)
+            }
+        }
+    }
+
+    private suspend fun uploadFile(applicationId: String, file: Uri, purpose: String): String {
+        val resolver = requireContext().contentResolver
+        val contentType = resolver.getType(file)?.takeIf { it in ALLOWED_PROOF_TYPES }
+            ?: error("Unsupported document type")
+        val bytes = resolver.openInputStream(file)?.use { it.readNBytes(MAX_PROOF_BYTES + 1) }
+            ?: error("Cannot read the selected document")
+        require(bytes.size <= MAX_PROOF_BYTES) { "Document is larger than 10 MB" }
+        val session = navigator.onboardingApi.createUploadSession(
+            applicationId,
+            UploadSessionRequest(purpose = purpose, contentType = contentType),
+        )
+        navigator.onboardingApi.uploadDocument(session, bytes, contentType)
+        return session.uploadSessionId ?: error("Upload session has no id")
+    }
+
+    private fun attachIdentityDocument(button: Block, state: ScreenState, onComplete: (Boolean) -> Unit) {
+        val applicationId = navigator.appState.registrationApplicationId
+        if (applicationId.isNullOrBlank() || !NetworkStatus.hasValidatedInternet(requireContext())) {
+            showMessage("{{onb.network.required.title}}", "{{onb.network.required.message}}")
+            onComplete(false)
+            return
+        }
+        val values = state.inputValues
+        val documentNumber = values["documentNumber"].orEmpty().trim()
+        val issueDate = parseBirthDate(values["issueDate"].orEmpty().trim())
+        val expiryDate = parseBirthDate(values["expiryDate"].orEmpty().trim())
+        val front = pickedFiles["frontDocument"]
+        val selfie = pickedFiles["selfie"]
+        val back = pickedFiles["backDocument"]
+        val documentType = when (values["documentType"]) {
+            "1" -> DocumentType.ONIP_NIN
+            "2" -> DocumentType.BIOMETRIC_PASSPORT
+            "3" -> DocumentType.RESIDENCE_PERMIT
+            else -> DocumentType.CENI
+        }
+        // ISO dates compare lexicographically.
+        if (documentNumber.isEmpty() || issueDate == null || expiryDate == null || expiryDate <= issueDate ||
+            front == null || selfie == null
+        ) {
+            showMessage("{{onb.error.identity_incomplete}}")
+            onComplete(false)
+            return
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            var uploading = true
+            try {
+                withContext(Dispatchers.IO) {
+                    val frontId = uploadFile(applicationId, front, "DOCUMENT_FRONT")
+                    val backId = back?.let { uploadFile(applicationId, it, "DOCUMENT_BACK") }
+                    val selfieId = uploadFile(applicationId, selfie, "LIVENESS_SELFIE")
+                    uploading = false
+                    navigator.onboardingApi.attachIdentityDocument(
+                        applicationId,
+                        IdentityDocumentRequest(
+                            documentType = documentType,
+                            documentNumber = documentNumber,
+                            issuingCountry = "CD",
+                            issueDate = issueDate,
+                            expiryDate = expiryDate,
+                            frontUploadId = frontId,
+                            backUploadId = backId,
+                            selfieUploadId = selfieId,
+                        ),
+                    )
+                }
+                navigate(button.to ?: "onb-infos-perso")
+                onComplete(true)
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (error: Exception) {
+                Log.w(logTag, "identity document failed (upload=$uploading)", error)
+                showMessage(if (uploading) "{{onb.error.upload_failed}}" else "{{onb.error.identity_failed}}")
+                onComplete(false)
+            }
+        }
+    }
+
+    override fun toggleChanged(fieldId: String, checked: Boolean, accept: (Boolean) -> Unit) {
+        if (fieldId != GEOLOCATION_FIELD) {
+            accept(true)
+            return
+        }
+        if (!checked) {
+            geoAddress = null
+            accept(true)
+            return
+        }
+        if (hasLocationPermission()) {
+            locate(accept)
+        } else {
+            pendingGeolocation = accept
+            locationPermission.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
+        }
+    }
+
+    private fun hasPermission(permission: String) =
+        ContextCompat.checkSelfPermission(requireContext(), permission) == PackageManager.PERMISSION_GRANTED
+
+    private fun hasLocationPermission() =
+        hasPermission(Manifest.permission.ACCESS_FINE_LOCATION) || hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
+
+    private fun geolocationFailed(accept: (Boolean) -> Unit) {
+        geoAddress = null
+        showMessage("{{onb.error.geolocation_unavailable}}")
+        accept(false)
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun locate(accept: (Boolean) -> Unit) {
+        val manager = requireContext().getSystemService(LocationManager::class.java)
+        val providers = buildList {
+            if (hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)) add(LocationManager.GPS_PROVIDER)
+            add(LocationManager.NETWORK_PROVIDER)
+        }
+        val provider = providers.firstOrNull { runCatching { manager.isProviderEnabled(it) }.getOrDefault(false) }
+        if (provider == null) {
+            geolocationFailed(accept)
+            return
+        }
+        manager.getCurrentLocation(provider, null, ContextCompat.getMainExecutor(requireContext())) { location ->
+            if (!isAdded) return@getCurrentLocation
+            if (location == null) geolocationFailed(accept) else resolveAddress(location, accept)
+        }
+    }
+
+    private fun resolveAddress(location: Location, accept: (Boolean) -> Unit) {
+        fun done(address: String?) {
+            if (!isAdded) return
+            requireActivity().runOnUiThread {
+                val coordinates = String.format(Locale.ROOT, "%.6f, %.6f", location.latitude, location.longitude)
+                geoAddress = GeoAddress(address?.takeIf(String::isNotBlank) ?: coordinates, location.latitude, location.longitude)
+                accept(true)
+            }
+        }
+        if (!Geocoder.isPresent()) {
+            done(null)
+            return
+        }
+        Geocoder(requireContext(), Locale.forLanguageTag(navigator.appState.languageCode)).getFromLocation(
+            location.latitude,
+            location.longitude,
+            1,
+            object : Geocoder.GeocodeListener {
+                override fun onGeocode(addresses: MutableList<Address>) = done(addresses.firstOrNull()?.getAddressLine(0))
+                override fun onError(errorMessage: String?) = done(null)
+            },
+        )
     }
 
     /** The date picker writes dd/MM/yyyy; the API expects an ISO date. */
@@ -367,5 +585,10 @@ class OnboardingFragment : ScreenFragment() {
         const val OTP_LENGTH = 6
         const val EMAIL_CODE_LENGTH = 64
         const val PIN_LENGTH = 4
+        const val ADDRESS_DOCUMENT_FIELD = "addressDocument"
+        const val GEOLOCATION_FIELD = "useGeolocation"
+        const val ADDRESS_PROOF_PURPOSE = "ADDRESS_PROOF"
+        const val MAX_PROOF_BYTES = 10 * 1024 * 1024
+        val ALLOWED_PROOF_TYPES = setOf("image/jpeg", "image/png", "application/pdf")
     }
 }

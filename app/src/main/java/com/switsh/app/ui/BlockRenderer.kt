@@ -54,6 +54,15 @@ interface RenderActions {
     fun pinEntered(pin: String? = null): Boolean
     fun biometricUnlockEnabled(): Boolean
     fun currentLanguage(): String
+
+    /**
+     * Picks (or, when [clear] is true, discards) the file backing [fieldId]. [onResult] receives
+     * the display name of the selected file, or null when nothing is attached.
+     */
+    fun pickFile(fieldId: String, clear: Boolean, onResult: (String?) -> Unit) = onResult(null)
+
+    /** Lets a screen veto a toggle change (e.g. missing permission); [accept] false reverts it. */
+    fun toggleChanged(fieldId: String, checked: Boolean, accept: (Boolean) -> Unit) = accept(true)
 }
 
 /** Builds native views for the block-based screen definitions generated from the prototype. */
@@ -169,7 +178,19 @@ class BlockRenderer(private val ctx: Context, private val actions: RenderActions
                 isChecked = b.on
                 b.fieldId?.let { fieldId ->
                     state.inputValues[fieldId] = isChecked.toString()
-                    setOnCheckedChangeListener { _, checked -> state.inputValues[fieldId] = checked.toString() }
+                    var reverting = false
+                    setOnCheckedChangeListener { _, checked ->
+                        if (reverting) return@setOnCheckedChangeListener
+                        state.inputValues[fieldId] = checked.toString()
+                        actions.toggleChanged(fieldId, checked) { accepted ->
+                            if (!accepted) {
+                                reverting = true
+                                isChecked = !checked
+                                state.inputValues[fieldId] = (!checked).toString()
+                                reverting = false
+                            }
+                        }
+                    }
                 }
             },
         )
@@ -334,7 +355,18 @@ class BlockRenderer(private val ctx: Context, private val actions: RenderActions
         box.addView(titleView, ui.lp())
         if (!b.sub.isNullOrBlank()) box.addView(subView, ui.lp(top = 2))
         refresh()
-        box.setOnClickListener { done = !done; refresh() }
+        val fieldId = b.fieldId
+        if (fieldId == null) {
+            box.setOnClickListener { done = !done; refresh() }
+        } else {
+            box.setOnClickListener {
+                actions.pickFile(fieldId, clear = done) { name ->
+                    done = name != null
+                    refresh()
+                    if (name != null) titleView.text = name
+                }
+            }
+        }
         return box
     }
 

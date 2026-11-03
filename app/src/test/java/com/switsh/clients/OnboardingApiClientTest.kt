@@ -74,4 +74,32 @@ class OnboardingApiClientTest {
     fun allowsCleartextRemoteHostWhenExplicitlyEnabled() {
         OnboardingApiClient("http://192.168.1.25:8080", { "t" }, allowInsecureHttp = true)
     }
+
+    @Test
+    fun uploadDocumentResolvesMemorySchemeToBaseUrl() = runTest {
+        var seen: HttpRequestData? = null
+        val engine = MockEngine { req ->
+            seen = req
+            respond("", HttpStatusCode.OK)
+        }
+        val client = OnboardingApiClient("http://localhost:8080", { "tok" }, engine, allowInsecureHttp = true)
+        val session = UploadSessionView(uploadUrl = "memory://upload/session123")
+        client.uploadDocument(session, byteArrayOf(1, 2, 3), "image/jpeg")
+        assertEquals("http://localhost:8080/upload/session123", seen!!.url.toString())
+        assertEquals("Bearer tok", seen!!.headers[HttpHeaders.Authorization])
+    }
+
+    @Test
+    fun uploadDocumentPreservesExternalHttpsUrlWithoutAuthHeader() = runTest {
+        var seen: HttpRequestData? = null
+        val engine = MockEngine { req ->
+            seen = req
+            respond("", HttpStatusCode.OK)
+        }
+        val client = OnboardingApiClient("http://localhost:8080", { "tok" }, engine, allowInsecureHttp = true)
+        val session = UploadSessionView(uploadUrl = "https://s3.amazonaws.com/bucket/file.jpg")
+        client.uploadDocument(session, byteArrayOf(1, 2, 3), "image/jpeg")
+        assertEquals("https://s3.amazonaws.com/bucket/file.jpg", seen!!.url.toString())
+        assertTrue(seen!!.headers[HttpHeaders.Authorization] == null)
+    }
 }

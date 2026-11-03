@@ -22,11 +22,11 @@ Back-office, compliance-engine and infrastructure requirements (Domain 7, RBAC, 
 
 ### Profile and KYC/KYB
 - [x] Customer profile selection screen calling `selectProfile`; no navigation unless confirmed, "temporarily unavailable" error otherwise (`onb-profile-select`)
-- [ ] BR-ID-01 Identity document screen: UI only (`onb-id-particulier`); capture, upload session and `attachIdentityDocument` not wired
+- [x] BR-ID-01 Identity document screen (`onb-id-particulier`): files picked, uploaded via `createUploadSession`, then `attachIdentityDocument` (capture via file picker, no camera yet)
 - [ ] BR-ID-01 OCR of CENI / ONIP-NIN / passport / resident card
 - [ ] BR-ID-02 Liveness selfie and face match
 - [x] Personal information screen calling `savePersonalProfile` on Continue; no navigation unless saved, "temporarily unavailable" error otherwise (`onb-infos-perso`)
-- [ ] BR-ID-03 Proof-of-address screen: UI only (`onb-justif-domicile`); upload and geolocation not wired
+- [x] BR-ID-03 Proof-of-address screen: document upload via `createUploadSession` + PUT, geolocation fallback stored in SQLite, submit calls `submitApplication` (`onb-justif-domicile`)
 - [ ] BR-KYB-01 Business KYB screen: UI only (`onb-kyb`); RCCM, NIF, statutes, legal representative, UBO not wired
 - [ ] Verification status screen driven by `getApplication` instead of static content (`onb-status`)
 - [ ] BR-TIER-01 Display KYC status (PENDING / VERIFIED / REJECTED) and level 1/2/3

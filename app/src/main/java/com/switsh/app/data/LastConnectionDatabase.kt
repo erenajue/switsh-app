@@ -29,9 +29,43 @@ class LastConnectionDatabase(context: Context) : SQLiteOpenHelper(
             )
             """.trimIndent(),
         )
+        createCurrentAddressTable(db)
     }
 
-    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) = Unit
+    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        if (oldVersion < 2) createCurrentAddressTable(db)
+    }
+
+    private fun createCurrentAddressTable(db: SQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS $CURRENT_ADDRESS_TABLE (
+                id INTEGER PRIMARY KEY CHECK (id = 1),
+                address TEXT NOT NULL,
+                latitude REAL NOT NULL,
+                longitude REAL NOT NULL,
+                captured_at INTEGER NOT NULL
+            )
+            """.trimIndent(),
+        )
+    }
+
+    fun saveCurrentAddress(address: String, latitude: Double, longitude: Double) {
+        val values = ContentValues().apply {
+            put(ID_COLUMN, CURRENT_ADDRESS_ROW_ID)
+            put("address", address)
+            put("latitude", latitude)
+            put("longitude", longitude)
+            put("captured_at", System.currentTimeMillis())
+        }
+        writableDatabase.insertWithOnConflict(CURRENT_ADDRESS_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE)
+    }
+
+    fun getCurrentAddress(): String? =
+        readableDatabase.query(
+            CURRENT_ADDRESS_TABLE, arrayOf("address"), "$ID_COLUMN = ?",
+            arrayOf(CURRENT_ADDRESS_ROW_ID.toString()), null, null, null,
+        ).use { cursor -> if (cursor.moveToFirst()) cursor.getString(0).takeIf(String::isNotBlank) else null }
 
     fun saveProfileName(displayName: String) {
         val normalizedName = displayName.trim()
@@ -90,7 +124,9 @@ class LastConnectionDatabase(context: Context) : SQLiteOpenHelper(
 
     private companion object {
         const val DATABASE_NAME = "switsh.db"
-        const val DATABASE_VERSION = 1
+        const val DATABASE_VERSION = 2
+        const val CURRENT_ADDRESS_TABLE = "current_address"
+        const val CURRENT_ADDRESS_ROW_ID = 1
         const val PROFILE_TABLE = "account_profile"
         const val LAST_CONNECTION_TABLE = "last_connection"
         const val ID_COLUMN = "id"

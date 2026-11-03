@@ -450,6 +450,7 @@
           "t": "field",
           "label": "{{onb.identity.document_type}}",
           "required": "yes",
+          "fieldId": "documentType",
           "ui": "select",
           "options": [
             "CENI",
@@ -462,6 +463,7 @@
           "t": "field",
           "label": "{{onb.identity.document_number}}",
           "required": "yes",
+          "fieldId": "documentNumber",
           "ui": "text",
           "placeholder": "{{onb.identity.document_example}}"
         },
@@ -472,12 +474,14 @@
               "t": "field",
               "label": "{{onb.identity.issue_date}}",
               "required": "yes",
+              "fieldId": "issueDate",
               "ui": "date"
             },
             {
               "t": "field",
               "label": "{{onb.identity.expiry_date}}",
               "required": "yes",
+              "fieldId": "expiryDate",
               "ui": "date"
             }
           ]
@@ -488,17 +492,20 @@
         },
         {
           "t": "field",
+          "label": "{{onb.identity.front_photo}}",
+          "required": "yes",
+          "fieldId": "frontDocument",
           "ui": "file",
-          "icon": "checkCircle",
-          "title": "{{onb.identity.front_captured}}",
-          "sub": "{{onb.identity.ocr_sharpness}}",
-          "done": true,
-          "required": "no"
+          "icon": "camera",
+          "title": "{{onb.identity.take_front_photo}}",
+          "sub": "{{common.file_formats}}",
+          "done": false
         },
         {
           "t": "field",
           "label": "{{onb.identity.back_photo}}",
           "required": "cond",
+          "fieldId": "backDocument",
           "ui": "file",
           "icon": "camera",
           "title": "{{onb.identity.take_back_photo}}",
@@ -509,6 +516,7 @@
           "t": "field",
           "label": "{{onb.identity.liveness_selfie}}",
           "required": "yes",
+          "fieldId": "selfie",
           "ui": "file",
           "icon": "face",
           "title": "{{onb.identity.start_liveness}}",
@@ -688,14 +696,16 @@
             "{{onb.address_proof.utility_bill}}",
             "{{onb.address_proof.geolocation}}",
             "{{onb.address_proof.honor_declaration}}"
-          ]
+          ],
+          "fieldId": "addressProofType"
         },
         {
           "t": "field",
           "hint": "{{onb.address_proof.age_hint}}",
           "label": "{{onb.identity.issue_date}}",
           "required": "yes",
-          "ui": "date"
+          "ui": "date",
+          "fieldId": "addressProofDate"
         },
         {
           "t": "field",
@@ -705,21 +715,20 @@
           "icon": "file",
           "title": "{{onb.address_proof.upload_hint}}",
           "sub": "{{common.file_formats}}",
-          "done": false
+          "done": false,
+          "fieldId": "addressDocument"
         },
         {
           "t": "card",
           "children": [
             {
-              "t": "row",
-              "card": true,
-              "icon": "globe",
-              "title": "{{onb.address_proof.geolocation}}",
-              "sub": "{{onb.address_proof.alternative}}",
-              "trailing": {
-                "kind": "toggle",
-                "on": false
-              }
+              "t": "field",
+              "ui": "toggle",
+              "label": "{{onb.address_proof.geolocation}}",
+              "hint": "{{onb.address_proof.alternative}}",
+              "on": false,
+              "required": "no",
+              "fieldId": "useGeolocation"
             }
           ]
         },

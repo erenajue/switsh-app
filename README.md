@@ -43,6 +43,16 @@ This project is provided as a prototype for educational and design demonstration
 
 On the "Informations personnelles" screen, Continue sends the form to `OnboardingApiClient.savePersonalProfile` (date converted to ISO, gender/nationality/source of funds mapped to API enums, optional monthly income mapped to an income band). The app only moves on once the profile is saved.
 
+## Identity document
+
+On the "Pièce d'identité" screen, Validate checks the document number, issue/expiry dates, front photo and selfie (back photo optional). Each file is uploaded via `createUploadSession` + PUT, then `OnboardingApiClient.attachIdentityDocument` is called with the upload ids; navigation happens only on success. OCR is not implemented.
+
+## Application submission
+
+On the "Justificatif de domicile" screen, the submit button calls `OnboardingApiClient.submitApplication` and only navigates to the status screen once the API confirms.
+
+A proof of address (JPEG, PNG or PDF, max 10 MB) is picked with the system file picker. On submit it is uploaded through `createUploadSession` followed by a PUT to the returned upload URL. If no document is attached, the "use current location" toggle requests location permission, reverse-geocodes the position and stores it as the current address in the local SQLite `current_address` table. Without a document or a location, submission is refused.
+
 ## Unlock
 
 The PIN created on the "Authentification & sécurité" screen is stored as a salted PBKDF2 hash. Without a saved PIN the app never shows the unlock screen: it restarts onboarding at language selection, so a registered user can only connect with a PIN. If the Face ID or fingerprint toggle is on, the platform biometric prompt is shown on startup (unlock screen) and the biometric key is shown on the PIN pad; otherwise the 4-digit PIN is required.
