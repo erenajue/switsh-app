@@ -37,6 +37,42 @@ class OnboardingApiClientTest {
     }
 
     @Test
+    fun getApplicationMapsVerificationStateAndTier() = runTest {
+        val engine = MockEngine {
+            respond(
+                """{"applicationId":"app-1","state":"MANUAL_REVIEW","complianceStatus":"REVIEW_REQUIRED","kycTier":"TIER_2"}""",
+                HttpStatusCode.OK,
+                json,
+            )
+        }
+        val client = OnboardingApiClient("https://api.example.com", { "tok" }, engine)
+        val application = client.getApplication("app-1")
+
+        assertEquals(ApplicationState.MANUAL_REVIEW, application.state)
+        assertEquals(ComplianceStatus.REVIEW_REQUIRED, application.complianceStatus)
+        assertEquals(KycTier.TIER_2, application.kycTier)
+    }
+
+    @Test
+    fun getApplicationMapsOptionalAmlAssessment() = runTest {
+        val engine = MockEngine {
+            respond(
+                """{"applicationId":"app-1","amlAssessment":{"screeningStatus":"MATCH_CONFIRMED","ongoingStatus":"REVIEW_REQUIRED","riskLevel":"HIGH","decision":"MANUAL_REVIEW"}}""",
+                HttpStatusCode.OK,
+                json,
+            )
+        }
+        val client = OnboardingApiClient("https://api.example.com", { "tok" }, engine)
+        val assessment = client.getApplication("app-1").amlAssessment
+
+        assertNotNull(assessment)
+        assertEquals("MATCH_CONFIRMED", assessment?.screeningStatus)
+        assertEquals("REVIEW_REQUIRED", assessment?.ongoingStatus)
+        assertEquals("HIGH", assessment?.riskLevel)
+        assertEquals("MANUAL_REVIEW", assessment?.decision)
+    }
+
+    @Test
     fun problemResponseBecomesException() = runTest {
         val engine = MockEngine {
             respond("""{"title":"nope","status":404,"code":"NOT_FOUND"}""", HttpStatusCode.NotFound, problem)

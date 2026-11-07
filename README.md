@@ -53,6 +53,20 @@ On the "Justificatif de domicile" screen, the submit button calls `OnboardingApi
 
 A proof of address (JPEG, PNG or PDF, max 10 MB) is picked with the system file picker. On submit it is uploaded through `createUploadSession` followed by a PUT to the returned upload URL. If no document is attached, the "use current location" toggle requests location permission, reverse-geocodes the position and stores it as the current address in the local SQLite `current_address` table. Without a document or a location, submission is refused.
 
+## Business KYB
+
+The "Entreprise / PME (KYB)" screen validates the company identifiers, incorporation date, UBO ownership percentages (maximum 100%), and required legal evidence. Statutes, the legal representative's identity document, and UBO supporting documents are uploaded through constrained upload sessions; company, document, and representative/UBO details are saved to the legacy onboarding sections before the application is submitted. The screen advances only after the API confirms each step.
+
+## Verification status
+
+The verification screen fetches the current application with `getApplication` whenever it resumes, then displays the returned compliance status, workflow state, and KYC tier. Values remain marked unavailable if the request fails or the API omits them; the screen does not imply a verified state before the API confirms it.
+
+When the API supplies an `amlAssessment`, the same screen displays localized initial screening, ongoing-monitoring, risk-level, and decision outcomes. Missing or unrecognized AML values remain unavailable; the client does not derive AML results from compliance status. The assessment object is optional because the current backend does not yet implement screening.
+
+## KYC transaction limit
+
+The P2P payment demo blocks a transfer when it exceeds the displayed remaining monthly KYC limit and explains that it was not sent; the dialog links to verification status. Until a payment API provides authoritative limit and rejection data, the displayed USD 1,180 remaining limit and USD/CDF conversion rate (2,850) are explicitly demo placeholders, not production limits.
+
 ## Unlock
 
-The PIN created on the "Authentification & sécurité" screen is stored as a salted PBKDF2 hash. Without a saved PIN the app never shows the unlock screen: it restarts onboarding at language selection, so a registered user can only connect with a PIN. If the Face ID or fingerprint toggle is on, the platform biometric prompt is shown on startup (unlock screen) and the biometric key is shown on the PIN pad; otherwise the 4-digit PIN is required.
+The PIN created on the "Authentification & sécurité" screen is stored as a salted BCrypt hash. Existing PBKDF2 hashes are verified and upgraded to BCrypt after a successful PIN entry. Without a saved PIN the app never shows the unlock screen: it restarts onboarding at language selection, so a registered user can only connect with a PIN. If the Face ID or fingerprint toggle is on, the platform biometric prompt is shown on startup (unlock screen) and the biometric key is shown on the PIN pad; otherwise the 4-digit PIN is required.

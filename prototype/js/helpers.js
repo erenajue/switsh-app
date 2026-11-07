@@ -45,25 +45,25 @@ function renderField(f) {
       control = `<div class="input-group"><input class="input" type="password" placeholder="${esc(f.placeholder || '••••••••')}" ${f.fieldId ? `data-field="${esc(f.fieldId)}"` : ''} /></div>`;
       break;
     case 'textarea':
-      control = `<textarea class="input" rows="3" placeholder="${esc(f.placeholder)}" style="resize:none;"></textarea>`;
+      control = `<textarea class="input" rows="3" placeholder="${esc(f.placeholder)}" ${f.fieldId ? `data-field="${esc(f.fieldId)}"` : ''} style="resize:none;"></textarea>`;
       break;
     case 'otp':
       control = `<div class="otp-row">${[0, 1, 2, 3, 4, 5].map((i) => `<input class="otp-box ${i < 3 ? 'filled' : ''}" maxlength="1" value="${i < 3 ? '•' : ''}" />`).join('')}</div>`;
       break;
     case 'select': {
       const opts = f.options.map((o) => `<option>${esc(o)}</option>`).join('');
-      control = `<div class="select-wrap"><select class="select">${opts || '<option>' + esc(f.placeholder || 'Sélectionner') + '</option>'}</select></div>`;
+      control = `<div class="select-wrap"><select class="select" ${f.fieldId ? `data-field="${esc(f.fieldId)}"` : ''}>${opts || '<option>' + esc(f.placeholder || 'Sélectionner') + '</option>'}</select></div>`;
       break;
     }
     case 'file':
-      control = `<div class="upload-box ${f.done ? 'done' : ''}">${ICONS[f.icon || 'upload']}<strong>${esc(f.placeholder || L('common.add_file', 'Ajouter un fichier'))}</strong><span>${esc(f.hint || L('common.file_formats', 'JPG, PNG ou PDF · 10 Mo max'))}</span></div>`;
+      control = `<div class="upload-box ${f.done ? 'done' : ''}" ${f.fieldId ? `data-field="${esc(f.fieldId)}"` : ''}>${ICONS[f.icon || 'upload']}<strong>${esc(f.placeholder || L('common.add_file', 'Ajouter un fichier'))}</strong><span>${esc(f.hint || L('common.file_formats', 'JPG, PNG ou PDF · 10 Mo max'))}</span></div>`;
       hint && (control += '');
       break;
     case 'toggle':
       control = `<div class="toggle-row" style="padding:0;border-bottom:none;"><span class="lbl" style="font-weight:400;font-size:var(--text-xs);color:var(--color-text-muted);">${esc(f.placeholder || 'Activer')}</span><div class="toggle ${f.on ? 'on' : ''}"><div class="knob"></div></div></div>`;
       break;
     case 'readonly':
-      control = `<div class="input" style="background:var(--color-surface-offset);color:var(--color-text-muted);">${esc(f.placeholder || '—')}</div>`;
+      control = `<div class="input" ${f.fieldId ? `data-field="${esc(f.fieldId)}"` : ''} style="background:var(--color-surface-offset);color:var(--color-text-muted);">${esc(f.placeholder || '—')}</div>`;
       break;
     default:
       control = `<div class="input">${esc(f.placeholder)}</div>`;

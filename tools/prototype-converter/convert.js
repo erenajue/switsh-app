@@ -15,7 +15,8 @@ function fieldBlock(el){
   const k=kids(el);const label=k.find(x=>tag(x)==='LABEL');
   const hint=k.find(x=>has(x,'hint'));
   const b={t:'field',hint:hint&&txt(hint)};
-  b.fieldId = (el.querySelector('input,textarea')||el).getAttribute('data-field') || undefined;
+  const field = el.querySelector('input,textarea,select');
+  b.fieldId = (field || el.querySelector('.upload-box') || el.querySelector('.input[data-field]') || el).getAttribute('data-field') || undefined;
   const maxLen=parseInt((el.querySelector('input')||el).getAttribute('maxlength'),10);if(maxLen)b.length=maxLen;
   if(label){b.label=own(label);const sp=[...label.querySelectorAll('span')];
     const s=sp.map(x=>txt(x)).join(' ');
@@ -148,7 +149,7 @@ for(const sc of out){
   if(MENU[sc.id])sc.blocks.push({t:'section',text:MENU[sc.id][0]},{t:'card',children:MENU[sc.id][1]});
 }
 // Groups exported to the app; extend this list as more sections are implemented.
-const INCLUDE=['start','onboarding'];
+const INCLUDE=['start','onboarding','payments'];
 fs.mkdirSync('../../app/src/main/assets',{recursive:true});
 const A='../../app/src/main/';
 fs.writeFileSync(A+'assets/screens.json',JSON.stringify({groups:GROUPS.filter(g=>INCLUDE.includes(g.id)).map(g=>({id:g.id,label:g.label})),screens:out.filter(s=>INCLUDE.includes(s.group))}));

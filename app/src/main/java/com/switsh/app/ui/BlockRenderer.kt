@@ -264,6 +264,7 @@ class BlockRenderer(private val ctx: Context, private val actions: RenderActions
     private fun readOnlyBox(b: Block): View = ui.text(b.placeholder ?: b.text ?: "", 14f, R.color.text_muted).apply {
         background = ui.rounded(R.color.surface_offset, 11, R.color.border)
         setPadding(ui.dp(14), ui.dp(13), ui.dp(14), ui.dp(13))
+        tag = b.fieldId
     }
 
     private fun selectBox(b: Block): View {

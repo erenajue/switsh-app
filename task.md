@@ -14,10 +14,10 @@ Back-office, compliance-engine and infrastructure requirements (Domain 7, RBAC, 
 - [x] BR-ONB-02 PIN creation + confirmation (4 digits, trivial PINs rejected) (`onb-auth-security`)
 - [x] BR-ONB-02 Biometric activation (Face ID / fingerprint toggles) enabling biometric unlock at startup
 - [x] BR-ONB-02 PIN required to unlock once registered; onboarding restarts if no PIN was ever saved
-- [x] Unlock screen personalised with the name from the last-connection SQLite DB
+- [x] Unlock screen personalized with the name from the last-connection SQLite DB
 - [ ] BR-ONB-02 Strong customer authentication (PIN/biometric) before sensitive actions (payments, limits, card changes)
 - [ ] 4/6-digit PIN choice (only 4 digits supported)
-- [ ] Spec NFR: hash PIN with Argon2/BCrypt (currently PBKDF2-HMAC-SHA256)
+- [x] Spec NFR: hash PIN with BCrypt; existing PBKDF2 PIN hashes are upgraded on successful verification
 - [ ] BR-ONB-03 SIM identity match (ARPTC)
 
 ### Profile and KYC/KYB
@@ -27,11 +27,11 @@ Back-office, compliance-engine and infrastructure requirements (Domain 7, RBAC, 
 - [ ] BR-ID-02 Liveness selfie and face match
 - [x] Personal information screen calling `savePersonalProfile` on Continue; no navigation unless saved, "temporarily unavailable" error otherwise (`onb-infos-perso`)
 - [x] BR-ID-03 Proof-of-address screen: document upload via `createUploadSession` + PUT, geolocation fallback stored in SQLite, submit calls `submitApplication` (`onb-justif-domicile`)
-- [ ] BR-KYB-01 Business KYB screen: UI only (`onb-kyb`); RCCM, NIF, statutes, legal representative, UBO not wired
-- [ ] Verification status screen driven by `getApplication` instead of static content (`onb-status`)
-- [ ] BR-TIER-01 Display KYC status (PENDING / VERIFIED / REJECTED) and level 1/2/3
-- [ ] BR-TIER-02 Explicit blocking message when a transaction exceeds the KYC threshold
-- [ ] BR-AML-01..04 Display AML outcomes to the user (screening runs server-side)
+- [x] BR-KYB-01 Business KYB screen (`onb-kyb`): validates and submits company details, RCCM/NIF, statutes, legal representative, and UBOs with supporting documents
+- [x] Verification status screen driven by `getApplication` instead of static content (`onb-status`)
+- [x] BR-TIER-01 Display API-driven KYC status and tier (levels 1/2/3) on `onb-status`
+- [x] BR-TIER-02 Explicit blocking message when a P2P transaction exceeds the KYC threshold (demo limit placeholder pending payment API)
+- [x] BR-AML-01..04 Display optional server-reported AML screening, ongoing-monitoring, risk, and decision outcomes on `onb-status`; missing/unrecognized values show unavailable (screening engine remains server-side)
 
 ## 2. Domain 2 — Core banking
 - [ ] BR-CB-01 CDF and USD wallets in a single profile

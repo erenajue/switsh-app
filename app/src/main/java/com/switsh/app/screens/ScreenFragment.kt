@@ -263,6 +263,7 @@ open class ScreenFragment : Fragment(), RenderActions {
                 screenId == "start-splash" -> SplashFragment()
                 group == "start" -> StartFragment()
                 group == "onboarding" -> OnboardingFragment()
+                group == "payments" -> PaymentsFragment()
                 else -> ScreenFragment()
             }
             return fragment.apply { arguments = bundleOf(ARG_SCREEN_ID to screenId) }

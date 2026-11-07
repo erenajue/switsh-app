@@ -10,8 +10,8 @@ SCREENS.push({
   meta: { br: ['BR-PAY-01'], qc: ['QC-PAY-01', 'QC-PAY-02'], note: 'Transfert instantané entre wallets Switsh ; contrôle du solde disponible et des plafonds KYC avant exécution.' },
   fields: [
     F({ label: 'Destinataire (numéro / identifiant Switsh)', specType: 'Texte / MSISDN', ui: 'tel', required: 'yes', hint: 'Doit correspondre à un compte Switsh actif' }),
-    F({ label: 'Montant', specType: 'Numérique', ui: 'number', required: 'yes', hint: '> 0 et ≤ solde disponible et plafond KYC' }),
-    F({ label: 'Devise', specType: 'Liste (USD / CDF)', ui: 'select', required: 'yes', options: ['USD', 'CDF'] }),
+    F({ label: 'Montant', specType: 'Numérique', ui: 'number', required: 'yes', fieldId: 'p2pAmount', hint: '> 0 et ≤ solde disponible et plafond KYC' }),
+    F({ label: 'Devise', specType: 'Liste (USD / CDF)', ui: 'select', required: 'yes', fieldId: 'p2pCurrency', options: ['USD', 'CDF'] }),
     F({ label: 'Motif du virement', specType: 'Texte', ui: 'text', required: 'no' }),
     F({ label: 'Code PIN / biométrie', specType: 'SCA', ui: 'password', required: 'yes', hint: 'Authentification forte obligatoire' }),
   ],
@@ -27,11 +27,11 @@ SCREENS.push({
       <div class="avatar">JT</div><div style="flex:1;"><strong style="font-size:var(--text-sm);">Jonas Tshimanga</strong><div style="font-size:11px;color:var(--color-text-faint);">+243 998 765 432 · Vérifié</div></div><span class="badge badge-success">Switsh</span>
     </div>
     <div style="display:flex;gap:var(--space-3);">
-      <div style="flex:1;">${renderField(F({ label: 'Montant', ui: 'number', required: 'yes', prefix: '$' }))}</div>
-      <div style="flex:1;">${renderField(F({ label: 'Devise', ui: 'select', required: 'yes', options: ['USD', 'CDF'] }))}</div>
+      <div style="flex:1;">${renderField(F({ label: 'Montant', ui: 'number', required: 'yes', prefix: '$', fieldId: 'p2pAmount' }))}</div>
+      <div style="flex:1;">${renderField(F({ label: 'Devise', ui: 'select', required: 'yes', fieldId: 'p2pCurrency', options: ['USD', 'CDF'] }))}</div>
     </div>
     ${renderField(F({ label: 'Motif (optionnel)', ui: 'text', required: 'no', placeholder: 'Ex. Remboursement taxi' }))}
-    <div class="notice-box notice-info">${ICONS.wallet}<span>Solde disponible : <strong>$ 820.00</strong> · Plafond restant ce mois : <strong>$ 1,180</strong></span></div>
+    <div class="notice-box notice-info">${ICONS.wallet}<span>Solde disponible : <strong>$ 1,820.00</strong> · ${L('payments.kyc_limit.placeholder_remaining', 'Plafond mensuel restant (démo)')} : <strong>$ 1,180</strong></span></div>
     <div class="sticky-cta"><button class="btn btn-primary">Envoyer $ 0.00</button></div>
   `,
 });

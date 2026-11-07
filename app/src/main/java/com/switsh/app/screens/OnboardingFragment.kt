@@ -9,6 +9,7 @@ import android.location.Location
 import android.location.LocationManager
 import android.net.Uri
 import android.util.Patterns
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import android.util.Log
@@ -18,7 +19,10 @@ import com.switsh.app.R
 import com.switsh.app.model.Block
 import com.switsh.app.model.ScreenLabels
 import com.switsh.app.domains.onboarding.ContactType
+import com.switsh.app.domains.onboarding.CreateOnboardingRequest
 import com.switsh.app.domains.onboarding.CustomerType
+import com.switsh.app.domains.onboarding.ComplianceStatus
+import com.switsh.app.domains.onboarding.KycTier
 import com.switsh.app.domains.onboarding.IncomeBand
 import com.switsh.app.domains.onboarding.PersonalProfileRequest
 import com.switsh.app.domains.onboarding.ProfileSelectionRequest
@@ -36,6 +40,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Locale
+import java.time.DateTimeException
+import java.time.LocalDate
+import java.math.BigDecimal
 
 /** "Onboarding" section: registration, KYC/KYB steps and verification status. */
 class OnboardingFragment : ScreenFragment() {
@@ -58,6 +65,7 @@ class OnboardingFragment : ScreenFragment() {
             savePersonalProfile(button, state, onComplete)
             return
         }
+
         if (screenId == "onb-inscription") {
             register(button, state, onComplete)
             return
@@ -68,6 +76,10 @@ class OnboardingFragment : ScreenFragment() {
         }
         if (screenId == "onb-justif-domicile") {
             submitApplication(button, onComplete)
+            return
+        }
+        if (screenId == "onb-kyb") {
+            submitBusinessProfile(button, state, onComplete)
             return
         }
         if (screenId == "onb-auth-security") {
@@ -90,6 +102,113 @@ class OnboardingFragment : ScreenFragment() {
         }
         super.primary(button, state, onComplete)
     }
+
+    override fun onResume() {
+        super.onResume()
+        if (screenId == "onb-status") loadApplicationStatus()
+    }
+
+    private fun loadApplicationStatus() {
+        val applicationId = navigator.appState.registrationApplicationId
+        if (applicationId.isNullOrBlank()) {
+            showStatusUnavailable()
+            return
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val application = withContext(Dispatchers.IO) {
+                    navigator.onboardingApi.getApplication(applicationId)
+                }
+                setStatusValue("complianceStatusValue", complianceStatusLabel(application.complianceStatus))
+                setStatusValue(
+                    "applicationStateValue",
+                    application.state?.let {
+                        ScreenLabels.resolve("{{onb.status.state.${it.name.lowercase(Locale.ROOT)}}}", currentLanguage())
+                    } ?: unavailableLabel(),
+                )
+                setStatusValue("kycTierValue", application.kycTier?.let(::kycTierLabel) ?: unavailableLabel())
+                val aml = application.amlAssessment
+                setStatusValue("amlScreeningValue", amlOutcomeLabel("onb.status.aml.screening", aml?.screeningStatus))
+                setStatusValue("amlOngoingValue", amlOutcomeLabel("onb.status.aml.ongoing", aml?.ongoingStatus))
+                setStatusValue("amlRiskValue", amlOutcomeLabel("onb.status.aml.risk", aml?.riskLevel))
+                setStatusValue("amlDecisionValue", amlOutcomeLabel("onb.status.aml.decision", aml?.decision))
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (error: Exception) {
+                Log.w(logTag, "application status fetch failed", error)
+                showStatusUnavailable()
+            }
+        }
+    }
+
+    private fun showStatusUnavailable() {
+        val unavailable = unavailableLabel()
+        setStatusValue("complianceStatusValue", unavailable)
+        setStatusValue("applicationStateValue", unavailable)
+        setStatusValue("kycTierValue", unavailable)
+        setStatusValue("amlScreeningValue", unavailable)
+        setStatusValue("amlOngoingValue", unavailable)
+        setStatusValue("amlRiskValue", unavailable)
+        setStatusValue("amlDecisionValue", unavailable)
+    }
+
+    private fun setStatusValue(fieldId: String, value: String) {
+        val field = view?.findViewWithTag<TextView>(fieldId) ?: return
+        field.text = value
+    }
+
+    private fun complianceStatusLabel(status: ComplianceStatus?): String {
+        val key = when (status) {
+            ComplianceStatus.PENDING -> "pending"
+            ComplianceStatus.REVIEW_REQUIRED -> "review_required"
+            ComplianceStatus.VERIFIED -> "verified"
+            ComplianceStatus.SUSPENDED -> "suspended"
+            ComplianceStatus.REJECTED -> "rejected"
+            ComplianceStatus.EXPIRED -> "expired"
+            ComplianceStatus.WITHDRAWN -> "withdrawn"
+            null -> return unavailableLabel()
+        }
+        return ScreenLabels.resolve("{{onb.status.compliance.$key}}", currentLanguage()).orEmpty()
+    }
+
+    private fun kycTierLabel(tier: KycTier): String {
+        val level = when (tier) {
+            KycTier.TIER_1 -> "1"
+            KycTier.TIER_2 -> "2"
+            KycTier.TIER_3 -> "3"
+        }
+        return ScreenLabels.resolve("{{onb.status.tier.$level}}", currentLanguage()).orEmpty()
+    }
+
+    private fun amlOutcomeLabel(category: String, outcome: String?): String {
+        val normalized = outcome?.uppercase(Locale.ROOT) ?: return unavailableLabel()
+        val key = when (category) {
+            "onb.status.aml.screening", "onb.status.aml.ongoing" -> when (normalized) {
+                "PENDING" -> "pending"
+                "CLEAR" -> "clear"
+                "REVIEW_REQUIRED" -> "review_required"
+                "MATCH_CONFIRMED" -> "match_confirmed"
+                else -> return unavailableLabel()
+            }
+            "onb.status.aml.risk" -> when (normalized) {
+                "LOW" -> "low"
+                "MEDIUM" -> "medium"
+                "HIGH" -> "high"
+                else -> return unavailableLabel()
+            }
+            "onb.status.aml.decision" -> when (normalized) {
+                "CLEAR" -> "clear"
+                "MANUAL_REVIEW" -> "manual_review"
+                "BLOCKED" -> "blocked"
+                else -> return unavailableLabel()
+            }
+            else -> return unavailableLabel()
+        }
+        return ScreenLabels.resolve("{{$category.$key}}", currentLanguage()).orEmpty()
+    }
+
+    private fun unavailableLabel() =
+        ScreenLabels.resolve("{{onb.status.unavailable}}", currentLanguage()).orEmpty()
 
     override fun action(action: String) {
         if (action == "resend" && (screenId == "onb-otp" || screenId == "onb-mail-otp")) {
@@ -262,6 +381,153 @@ class OnboardingFragment : ScreenFragment() {
                 showMessage(if (uploading) "{{onb.error.upload_failed}}" else "{{onb.profile.unavailable}}")
                 onComplete(false)
             }
+        }
+    }
+
+    private fun submitBusinessProfile(button: Block, state: ScreenState, onComplete: (Boolean) -> Unit) {
+        val applicationId = navigator.appState.registrationApplicationId
+        if (applicationId.isNullOrBlank() || !NetworkStatus.hasValidatedInternet(requireContext())) {
+            showMessage("{{onb.network.required.title}}", "{{onb.network.required.message}}")
+            onComplete(false)
+            return
+        }
+
+        val values = state.inputValues
+        fun text(key: String) = values[key].orEmpty().trim()
+        val companyName = text("companyName")
+        val rccm = text("rccm").uppercase(Locale.ROOT)
+        val nif = text("nif").uppercase(Locale.ROOT)
+        val incorporationDate = parseStrictDate(text("incorporationDate"))
+        val registeredAddress = text("registeredAddress")
+        val representative = text("representativeNameRole")
+        val rccmPattern = Regex("[A-Z0-9][A-Z0-9./-]{2,31}")
+        val annualTurnover = text("annualTurnover")
+        val turnover = annualTurnover.takeIf(String::isNotEmpty)?.replace(',', '.')?.toBigDecimalOrNull()
+        val owners = parseBeneficialOwners(text("uboList"))
+        val files = listOf(STATUTES_FIELD, REPRESENTATIVE_DOCUMENT_FIELD, UBO_DOCUMENT_FIELD)
+        if (companyName.isEmpty() || !rccm.matches(rccmPattern) || !nif.matches(rccmPattern) ||
+            incorporationDate == null || incorporationDate > LocalDate.now() || registeredAddress.isEmpty() ||
+            representative.isEmpty() ||
+            (annualTurnover.isNotEmpty() && (turnover == null || turnover.signum() < 0)) ||
+            owners == null || files.any { pickedFiles[it] == null }
+        ) {
+            showMessage("{{onb.error.kyb_incomplete}}")
+            onComplete(false)
+            return
+        }
+        if (owners.sumOf { it.ownershipPercent } > 100.0) {
+            showMessage("{{onb.error.ubo_invalid}}")
+            onComplete(false)
+            return
+        }
+
+        val legalForm = when (values["legalForm"]) {
+            "1" -> "SA"
+            "2" -> "SOLE_PROPRIETORSHIP"
+            "3" -> "OTHER"
+            else -> "SARL"
+        }
+        val industry = when (values["industry"]) {
+            "1" -> "IMPORT_EXPORT"
+            "2" -> "SERVICES"
+            "3" -> "AGRI_FOOD"
+            "4" -> "OTHER"
+            else -> "GENERAL_TRADE"
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            var uploading = false
+            try {
+                withContext(Dispatchers.IO) {
+                    val appState = navigator.appState
+                    val onboardingId = appState.registrationOnboardingId?.takeIf(String::isNotBlank)
+                        ?: navigator.onboardingApi.createOnboarding(CreateOnboardingRequest()).id
+                            ?.takeIf(String::isNotBlank)
+                            ?.also { appState.registrationOnboardingId = it }
+                        ?: error("KYB onboarding response did not include an ID")
+
+                    uploading = true
+                    val statutesId = uploadFile(applicationId, pickedFiles.getValue(STATUTES_FIELD), STATUTES_PURPOSE)
+                    val representativeId = uploadFile(
+                        applicationId,
+                        pickedFiles.getValue(REPRESENTATIVE_DOCUMENT_FIELD),
+                        REPRESENTATIVE_DOCUMENT_PURPOSE,
+                    )
+                    val uboDocumentId = uploadFile(applicationId, pickedFiles.getValue(UBO_DOCUMENT_FIELD), UBO_DOCUMENT_PURPOSE)
+                    uploading = false
+
+                    navigator.onboardingApi.completeOnboardingSection(
+                        onboardingId,
+                        "informations-entreprise",
+                        mapOf(
+                            "applicationId" to applicationId,
+                            "companyName" to companyName,
+                            "rccm" to rccm,
+                            "nif" to nif,
+                            "legalForm" to legalForm,
+                            "incorporationDate" to incorporationDate.toString(),
+                            "industry" to industry,
+                            "registeredAddress" to registeredAddress,
+                            "annualTurnover" to turnover,
+                        ),
+                    )
+                    navigator.onboardingApi.completeOnboardingSection(
+                        onboardingId,
+                        "documents-legaux",
+                        mapOf(
+                            "statutesUploadId" to statutesId,
+                            "legalRepresentativeIdentityUploadId" to representativeId,
+                            "beneficialOwnersDocumentUploadId" to uboDocumentId,
+                        ),
+                    )
+                    navigator.onboardingApi.completeOnboardingSection(
+                        onboardingId,
+                        "representant-legal",
+                        mapOf(
+                            "nameAndRole" to representative,
+                            "identityUploadId" to representativeId,
+                            "beneficialOwners" to owners.map {
+                                mapOf("fullName" to it.fullName, "ownershipPercent" to it.ownershipPercent)
+                            },
+                            "beneficialOwnersDocumentUploadId" to uboDocumentId,
+                        ),
+                    )
+                    navigator.onboardingApi.submitApplication(applicationId)
+                }
+                navigate(button.to ?: "onb-status")
+                onComplete(true)
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (error: Exception) {
+                Log.w(logTag, "business profile submission failed (upload=$uploading)", error)
+                showMessage(if (uploading) "{{onb.error.upload_failed}}" else "{{onb.profile.unavailable}}")
+                onComplete(false)
+            }
+        }
+    }
+
+    private data class BeneficialOwner(val fullName: String, val ownershipPercent: Double)
+
+    private fun parseBeneficialOwners(value: String): List<BeneficialOwner>? {
+        val lines = value.lines().map(String::trim).filter(String::isNotEmpty)
+        if (lines.isEmpty()) return null
+        val owners = lines.map { line ->
+            val parts = line.split('|', limit = 2)
+            val name = parts.firstOrNull()?.trim().orEmpty()
+            val percent = parts.getOrNull(1)?.trim()?.replace(',', '.')?.toDoubleOrNull()
+            if (name.isEmpty() || percent == null || !percent.isFinite() || percent <= 0.0 || percent > 100.0) return null
+            BeneficialOwner(name, percent)
+        }
+        return owners
+    }
+
+    private fun parseStrictDate(value: String): LocalDate? {
+        val parts = value.split('/')
+        if (parts.size != 3) return null
+        val (day, month, year) = parts.map { it.toIntOrNull() ?: return null }
+        return try {
+            LocalDate.of(year, month, day)
+        } catch (_: DateTimeException) {
+            null
         }
     }
 
@@ -538,6 +804,7 @@ class OnboardingFragment : ScreenFragment() {
                             ?.takeIf(String::isNotBlank)
                             ?: error("Registration response did not include an application ID")
                         appState.registrationApplicationId = newId
+                        appState.registrationOnboardingId = null
                         appState.registrationPhoneNumber = phoneNumber
                         appState.registrationEmail = email
                         // Close the application registered with the old contacts; best effort,
@@ -588,6 +855,12 @@ class OnboardingFragment : ScreenFragment() {
         const val ADDRESS_DOCUMENT_FIELD = "addressDocument"
         const val GEOLOCATION_FIELD = "useGeolocation"
         const val ADDRESS_PROOF_PURPOSE = "ADDRESS_PROOF"
+        const val STATUTES_FIELD = "statutesDocument"
+        const val REPRESENTATIVE_DOCUMENT_FIELD = "representativeDocument"
+        const val UBO_DOCUMENT_FIELD = "uboDocument"
+        const val STATUTES_PURPOSE = "COMPANY_STATUTES"
+        const val REPRESENTATIVE_DOCUMENT_PURPOSE = "LEGAL_REPRESENTATIVE_ID"
+        const val UBO_DOCUMENT_PURPOSE = "UBO_SUPPORTING_DOCUMENT"
         const val MAX_PROOF_BYTES = 10 * 1024 * 1024
         val ALLOWED_PROOF_TYPES = setOf("image/jpeg", "image/png", "application/pdf")
     }

@@ -46,6 +46,7 @@ dependencies {
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.serialization.gson)
     implementation(libs.gson)
+    implementation(libs.jbcrypt)
     implementation(libs.kotlinx.coroutines.android)
     testImplementation(libs.ktor.client.mock)
     testImplementation(libs.kotlinx.coroutines.test)

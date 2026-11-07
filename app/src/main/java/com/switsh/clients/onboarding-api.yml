@@ -649,6 +649,25 @@ components:
         kycTier:
           type: string
           enum: [TIER_1, TIER_2, TIER_3]
+        amlAssessment:
+          type: object
+          description: >-
+            Optional server-generated AML outcomes. Omit the object or individual
+            values when screening has not produced a result; the mobile client
+            displays those values as unavailable and never infers an outcome.
+          properties:
+            screeningStatus:
+              type: string
+              enum: [PENDING, CLEAR, REVIEW_REQUIRED, MATCH_CONFIRMED]
+            ongoingStatus:
+              type: string
+              enum: [PENDING, CLEAR, REVIEW_REQUIRED, MATCH_CONFIRMED]
+            riskLevel:
+              type: string
+              enum: [LOW, MEDIUM, HIGH]
+            decision:
+              type: string
+              enum: [CLEAR, MANUAL_REVIEW, BLOCKED]
         contacts:
           $ref: '#/components/schemas/ContactStatusView'
         nextActions:

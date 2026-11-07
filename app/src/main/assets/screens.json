@@ -7,6 +7,10 @@
     {
       "id": "onboarding",
       "label": "Onboarding & KYC/AML"
+    },
+    {
+      "id": "payments",
+      "label": "Paiements & interopérabilité"
     }
   ],
   "screens": [
@@ -207,10 +211,10 @@
         },
         {
           "t": "field",
+          "length": 6,
           "label": "{{onb.otp.label}}",
           "required": "yes",
-          "ui": "otp",
-          "length": 6
+          "ui": "otp"
         },
         {
           "t": "text",
@@ -264,11 +268,11 @@
         },
         {
           "t": "field",
+          "fieldId": "emailCode",
+          "length": 64,
           "label": "{{onb.mail_otp.label}}",
           "required": "yes",
-          "ui": "text",
-          "fieldId": "emailCode",
-          "length": 64
+          "ui": "text"
         },
         {
           "t": "cta",
@@ -312,38 +316,38 @@
         {
           "t": "field",
           "hint": "{{onb.security.pin_hint}}",
+          "fieldId": "pin",
           "label": "{{onb.security.create_pin}}",
           "required": "yes",
           "ui": "password",
-          "placeholder": "••••••••",
-          "fieldId": "pin"
+          "placeholder": "••••••••"
         },
         {
           "t": "field",
+          "fieldId": "confirmPin",
           "label": "{{onb.security.confirm_pin}}",
           "required": "yes",
           "ui": "password",
-          "placeholder": "••••••••",
-          "fieldId": "confirmPin"
+          "placeholder": "••••••••"
         },
         {
           "t": "card",
           "children": [
             {
               "t": "field",
+              "fieldId": "faceIdUnlock",
               "ui": "toggle",
               "placeholder": "{{onb.security.face_id_unlock}}",
               "on": true,
-              "required": "no",
-              "fieldId": "faceIdUnlock"
+              "required": "no"
             },
             {
               "t": "field",
+              "fieldId": "fingerprintUnlock",
               "ui": "toggle",
               "placeholder": "{{onb.security.fingerprint_unlock}}",
               "on": false,
-              "required": "no",
-              "fieldId": "fingerprintUnlock"
+              "required": "no"
             }
           ]
         },
@@ -401,10 +405,10 @@
         },
         {
           "t": "field",
+          "fieldId": "taxResidence",
           "label": "{{onb.profile.country}}",
           "required": "yes",
           "ui": "select",
-          "fieldId": "taxResidence",
           "options": [
             "{{onb.country.dr_congo}}",
             "{{onb.country.other}}"
@@ -448,9 +452,9 @@
         },
         {
           "t": "field",
+          "fieldId": "documentType",
           "label": "{{onb.identity.document_type}}",
           "required": "yes",
-          "fieldId": "documentType",
           "ui": "select",
           "options": [
             "CENI",
@@ -461,9 +465,9 @@
         },
         {
           "t": "field",
+          "fieldId": "documentNumber",
           "label": "{{onb.identity.document_number}}",
           "required": "yes",
-          "fieldId": "documentNumber",
           "ui": "text",
           "placeholder": "{{onb.identity.document_example}}"
         },
@@ -472,16 +476,16 @@
           "children": [
             {
               "t": "field",
+              "fieldId": "issueDate",
               "label": "{{onb.identity.issue_date}}",
               "required": "yes",
-              "fieldId": "issueDate",
               "ui": "date"
             },
             {
               "t": "field",
+              "fieldId": "expiryDate",
               "label": "{{onb.identity.expiry_date}}",
               "required": "yes",
-              "fieldId": "expiryDate",
               "ui": "date"
             }
           ]
@@ -492,9 +496,9 @@
         },
         {
           "t": "field",
+          "fieldId": "frontDocument",
           "label": "{{onb.identity.front_photo}}",
           "required": "yes",
-          "fieldId": "frontDocument",
           "ui": "file",
           "icon": "camera",
           "title": "{{onb.identity.take_front_photo}}",
@@ -503,9 +507,9 @@
         },
         {
           "t": "field",
+          "fieldId": "backDocument",
           "label": "{{onb.identity.back_photo}}",
           "required": "cond",
-          "fieldId": "backDocument",
           "ui": "file",
           "icon": "camera",
           "title": "{{onb.identity.take_back_photo}}",
@@ -514,9 +518,9 @@
         },
         {
           "t": "field",
+          "fieldId": "selfie",
           "label": "{{onb.identity.liveness_selfie}}",
           "required": "yes",
-          "fieldId": "selfie",
           "ui": "file",
           "icon": "face",
           "title": "{{onb.identity.start_liveness}}",
@@ -556,19 +560,19 @@
           "children": [
             {
               "t": "field",
+              "fieldId": "surname",
               "label": "{{onb.personal.last_name}}",
               "required": "yes",
               "ui": "text",
-              "placeholder": "KABUYA",
-              "fieldId": "surname"
+              "placeholder": "KABUYA"
             },
             {
               "t": "field",
+              "fieldId": "givenNames",
               "label": "{{onb.personal.first_name}}",
               "required": "yes",
               "ui": "text",
-              "placeholder": "Mireille",
-              "fieldId": "givenNames"
+              "placeholder": "Mireille"
             }
           ]
         },
@@ -577,15 +581,15 @@
           "children": [
             {
               "t": "field",
-              "label": "{{onb.personal.birth_date}}",
               "fieldId": "dateOfBirth",
+              "label": "{{onb.personal.birth_date}}",
               "required": "yes",
               "ui": "date"
             },
             {
               "t": "field",
-              "label": "{{onb.personal.gender}}",
               "fieldId": "sex",
+              "label": "{{onb.personal.gender}}",
               "required": "yes",
               "ui": "select",
               "options": [
@@ -597,16 +601,16 @@
         },
         {
           "t": "field",
+          "fieldId": "placeOfBirth",
           "label": "{{onb.personal.birth_place}}",
-              "fieldId": "placeOfBirth",
           "required": "yes",
           "ui": "text",
           "placeholder": "{{onb.example.kinshasa}}"
         },
         {
           "t": "field",
+          "fieldId": "nationality",
           "label": "{{onb.personal.nationality}}",
-              "fieldId": "nationality",
           "required": "yes",
           "ui": "select",
           "options": [
@@ -616,32 +620,32 @@
         },
         {
           "t": "field",
+          "fieldId": "address",
           "label": "{{onb.personal.address}}",
-              "fieldId": "address",
           "required": "yes",
           "ui": "text",
           "placeholder": "{{onb.example.address}}"
         },
         {
           "t": "field",
+          "fieldId": "city",
           "label": "{{onb.personal.city}}",
-              "fieldId": "city",
           "required": "yes",
           "ui": "text",
           "placeholder": "{{onb.example.city}}"
         },
         {
           "t": "field",
+          "fieldId": "occupation",
           "label": "{{onb.personal.profession}}",
-              "fieldId": "occupation",
           "required": "yes",
           "ui": "text",
           "placeholder": "{{onb.example.profession}}"
         },
         {
           "t": "field",
+          "fieldId": "sourceOfFunds",
           "label": "{{onb.personal.income_source}}",
-              "fieldId": "sourceOfFunds",
           "required": "yes",
           "ui": "select",
           "options": [
@@ -652,8 +656,8 @@
         },
         {
           "t": "field",
+          "fieldId": "monthlyIncome",
           "label": "{{onb.personal.monthly_income}}",
-              "fieldId": "monthlyIncome",
           "required": "no",
           "ui": "number",
           "placeholder": "0"
@@ -688,6 +692,7 @@
         },
         {
           "t": "field",
+          "fieldId": "addressProofType",
           "label": "{{onb.address_proof.type}}",
           "required": "yes",
           "ui": "select",
@@ -696,41 +701,35 @@
             "{{onb.address_proof.utility_bill}}",
             "{{onb.address_proof.geolocation}}",
             "{{onb.address_proof.honor_declaration}}"
-          ],
-          "fieldId": "addressProofType"
+          ]
         },
         {
           "t": "field",
           "hint": "{{onb.address_proof.age_hint}}",
+          "fieldId": "addressProofDate",
           "label": "{{onb.identity.issue_date}}",
           "required": "yes",
-          "ui": "date",
-          "fieldId": "addressProofDate"
+          "ui": "date"
         },
         {
           "t": "field",
+          "fieldId": "addressDocument",
           "label": "{{onb.address_proof.scanned_document}}",
           "required": "cond",
           "ui": "file",
           "icon": "file",
           "title": "{{onb.address_proof.upload_hint}}",
           "sub": "{{common.file_formats}}",
-          "done": false,
-          "fieldId": "addressDocument"
+          "done": false
         },
         {
-          "t": "card",
-          "children": [
-            {
-              "t": "field",
-              "ui": "toggle",
-              "label": "{{onb.address_proof.geolocation}}",
-              "hint": "{{onb.address_proof.alternative}}",
-              "on": false,
-              "required": "no",
-              "fieldId": "useGeolocation"
-            }
-          ]
+          "t": "field",
+          "hint": "{{onb.address_proof.alternative}}",
+          "fieldId": "useGeolocation",
+          "ui": "toggle",
+          "placeholder": "Activer",
+          "on": false,
+          "required": "no"
         },
         {
           "t": "cta",
@@ -762,6 +761,7 @@
         },
         {
           "t": "field",
+          "fieldId": "companyName",
           "label": "{{onb.business.company_name}}",
           "required": "yes",
           "ui": "text",
@@ -772,12 +772,14 @@
           "children": [
             {
               "t": "field",
+              "fieldId": "rccm",
               "label": "{{onb.business.rccm}}",
               "required": "yes",
               "ui": "text"
             },
             {
               "t": "field",
+              "fieldId": "nif",
               "label": "NIF",
               "required": "yes",
               "ui": "text"
@@ -786,6 +788,7 @@
         },
         {
           "t": "field",
+          "fieldId": "legalForm",
           "label": "{{onb.business.legal_form}}",
           "required": "yes",
           "ui": "select",
@@ -798,6 +801,14 @@
         },
         {
           "t": "field",
+          "fieldId": "incorporationDate",
+          "label": "{{onb.business.incorporation_date}}",
+          "required": "yes",
+          "ui": "date"
+        },
+        {
+          "t": "field",
+          "fieldId": "industry",
           "label": "{{onb.business.industry}}",
           "required": "yes",
           "ui": "select",
@@ -811,9 +822,18 @@
         },
         {
           "t": "field",
+          "fieldId": "registeredAddress",
           "label": "{{onb.business.registered_address}}",
           "required": "yes",
           "ui": "text"
+        },
+        {
+          "t": "field",
+          "fieldId": "annualTurnover",
+          "label": "{{onb.business.annual_turnover}}",
+          "required": "no",
+          "ui": "number",
+          "placeholder": "0"
         },
         {
           "t": "section",
@@ -821,42 +841,54 @@
         },
         {
           "t": "field",
+          "fieldId": "representativeNameRole",
           "label": "{{onb.business.representative_name}}",
           "required": "yes",
           "ui": "text"
         },
         {
           "t": "field",
+          "fieldId": "statutesDocument",
+          "label": "{{onb.business.statutes}}",
+          "required": "yes",
           "ui": "file",
           "icon": "file",
-          "title": "{{onb.business.representative_id}}",
+          "title": "{{onb.business.upload_statutes}}",
+          "sub": "{{common.file_formats}}",
+          "done": false
+        },
+        {
+          "t": "field",
+          "hint": "{{onb.business.accepted_ids}}",
+          "fieldId": "representativeDocument",
+          "label": "{{onb.business.representative_id}}",
+          "required": "yes",
+          "ui": "file",
+          "icon": "file",
+          "title": "{{onb.business.upload_representative_id}}",
           "sub": "{{onb.business.accepted_ids}}",
-          "done": false,
-          "required": "no"
+          "done": false
         },
         {
-          "t": "card",
-          "children": [
-            {
-              "t": "row",
-              "card": true,
-              "lead": "MK",
-              "title": "Mireille Kabuya",
-              "sub": "{{onb.business.ubo}} · 60%",
-              "trailing": {
-                "kind": "badge",
-                "text": "{{common.verified}}",
-                "style": "badge-success"
-              }
-            }
-          ]
+          "t": "field",
+          "hint": "{{onb.business.ubo_hint}}",
+          "fieldId": "uboList",
+          "label": "{{onb.business.ubo}}",
+          "required": "yes",
+          "ui": "textarea",
+          "placeholder": "Nom complet | % de détention"
         },
         {
-          "t": "button",
-          "text": "{{onb.business.add_ubo}}",
-          "style": "secondary",
-          "small": true,
-          "icon": "plus"
+          "t": "field",
+          "hint": "{{common.file_formats}}",
+          "fieldId": "uboDocument",
+          "label": "{{onb.business.ubo_documents}}",
+          "required": "yes",
+          "ui": "file",
+          "icon": "users",
+          "title": "{{onb.business.upload_ubo_documents}}",
+          "sub": "{{common.file_formats}}",
+          "done": false
         },
         {
           "t": "cta",
@@ -875,13 +907,13 @@
       "id": "onb-status",
       "group": "onboarding",
       "title": "{{onb.status.screen_title}}",
-      "subtitle": "Écran complémentaire (UX) — suivi du tiering KYC",
+      "subtitle": "{{onb.status.subtitle}}",
       "chrome": "sub",
       "bonus": true,
       "blocks": [
         {
           "t": "hero",
-          "icon": "checkCircle",
+          "icon": "shield",
           "title": "{{onb.status.title}}",
           "sub": "{{onb.status.subtitle}}"
         },
@@ -889,42 +921,77 @@
           "t": "card",
           "children": [
             {
-              "t": "row",
-              "title": "{{onb.status.kyc_status}}",
-              "sub": "{{onb.status.final_decision}}",
-              "trailing": {
-                "kind": "badge",
-                "text": "VERIFIED",
-                "style": "badge-success"
-              }
+              "t": "field",
+              "fieldId": "complianceStatusValue",
+              "label": "{{onb.status.kyc_status}}",
+              "required": "ro",
+              "ui": "readonly",
+              "placeholder": "{{onb.status.loading}}"
             },
             {
-              "t": "row",
-              "title": "{{onb.status.assigned_level}}",
-              "sub": "{{onb.status.limits_features}}",
-              "trailing": {
-                "kind": "badge",
-                "text": "{{onb.status.level_two}}",
-                "style": "badge-usd"
-              }
+              "t": "field",
+              "fieldId": "applicationStateValue",
+              "label": "{{onb.status.application_state}}",
+              "required": "ro",
+              "ui": "readonly",
+              "placeholder": "{{onb.status.loading}}"
             },
             {
-              "t": "row",
-              "title": "{{onb.status.aml_screening}}",
-              "sub": "{{onb.status.screening_lists}}",
-              "trailing": {
-                "kind": "badge",
-                "text": "CLEAR",
-                "style": "badge-success"
-              }
+              "t": "field",
+              "fieldId": "kycTierValue",
+              "label": "{{onb.status.assigned_level}}",
+              "required": "ro",
+              "ui": "readonly",
+              "placeholder": "{{onb.status.loading}}"
+            }
+          ]
+        },
+        {
+          "t": "section",
+          "text": "{{onb.status.aml.section}}"
+        },
+        {
+          "t": "card",
+          "children": [
+            {
+              "t": "field",
+              "fieldId": "amlScreeningValue",
+              "label": "{{onb.status.aml.screening_label}}",
+              "required": "ro",
+              "ui": "readonly",
+              "placeholder": "{{onb.status.loading}}"
+            },
+            {
+              "t": "field",
+              "fieldId": "amlOngoingValue",
+              "label": "{{onb.status.aml.ongoing_label}}",
+              "required": "ro",
+              "ui": "readonly",
+              "placeholder": "{{onb.status.loading}}"
+            },
+            {
+              "t": "field",
+              "fieldId": "amlRiskValue",
+              "label": "{{onb.status.aml.risk_label}}",
+              "required": "ro",
+              "ui": "readonly",
+              "placeholder": "{{onb.status.loading}}"
+            },
+            {
+              "t": "field",
+              "fieldId": "amlDecisionValue",
+              "label": "{{onb.status.aml.decision_label}}",
+              "required": "ro",
+              "ui": "readonly",
+              "placeholder": "{{onb.status.loading}}"
             }
           ]
         },
         {
           "t": "notice",
-          "kind": "warn",
-          "icon": "alert",
-          "text": "{{onb.status.address_proof_notice}}"
+          "kind": "info",
+          "icon": "shield",
+          "text": "{{onb.status.server_decision}}"
         },
         {
           "t": "cta",
@@ -934,6 +1001,612 @@
               "text": "{{onb.status.open_account}}",
               "style": "primary",
               "to": "bank-accounts"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pay-p2p",
+      "group": "payments",
+      "title": "Virement P2P",
+      "subtitle": "Écran « Virement P2P (entre utilisateurs Switsh) »",
+      "chrome": "sub",
+      "tab": "payments",
+      "blocks": [
+        {
+          "t": "title",
+          "text": "Envoyer de l'argent"
+        },
+        {
+          "t": "subtitle",
+          "text": "À un contact Switsh — instantané, sans frais"
+        },
+        {
+          "t": "field",
+          "label": "Destinataire",
+          "required": "yes",
+          "ui": "text",
+          "placeholder": "Nom, numéro ou @identifiant Switsh"
+        },
+        {
+          "t": "card",
+          "children": [
+            {
+              "t": "row",
+              "card": true,
+              "lead": "JT",
+              "title": "Jonas Tshimanga",
+              "sub": "+243 998 765 432 · Vérifié",
+              "trailing": {
+                "kind": "badge",
+                "text": "Switsh",
+                "style": "badge-success"
+              }
+            }
+          ]
+        },
+        {
+          "t": "fieldrow",
+          "children": [
+            {
+              "t": "field",
+              "fieldId": "p2pAmount",
+              "label": "Montant",
+              "required": "yes",
+              "ui": "number",
+              "prefix": "$"
+            },
+            {
+              "t": "field",
+              "fieldId": "p2pCurrency",
+              "label": "Devise",
+              "required": "yes",
+              "ui": "select",
+              "options": [
+                "USD",
+                "CDF"
+              ]
+            }
+          ]
+        },
+        {
+          "t": "field",
+          "label": "Motif (optionnel)",
+          "required": "no",
+          "ui": "text",
+          "placeholder": "Ex. Remboursement taxi"
+        },
+        {
+          "t": "notice",
+          "kind": "info",
+          "icon": "wallet",
+          "text": "Solde disponible : $ 1,820.00 · {{payments.kyc_limit.placeholder_remaining}} : $ 1,180"
+        },
+        {
+          "t": "cta",
+          "children": [
+            {
+              "t": "button",
+              "text": "Envoyer $ 0.00",
+              "style": "primary"
+            }
+          ]
+        },
+        {
+          "t": "section",
+          "text": "Autres paiements"
+        },
+        {
+          "t": "card",
+          "children": [
+            {
+              "t": "row",
+              "icon": "bank",
+              "title": "Virement externe",
+              "trailing": {
+                "kind": "chevron"
+              },
+              "to": "pay-external"
+            },
+            {
+              "t": "row",
+              "icon": "phone",
+              "title": "Cash-in / Cash-out",
+              "trailing": {
+                "kind": "chevron"
+              },
+              "to": "pay-cashinout"
+            },
+            {
+              "t": "row",
+              "icon": "arrows",
+              "title": "Convertisseur de devises",
+              "trailing": {
+                "kind": "chevron"
+              },
+              "to": "pay-converter"
+            },
+            {
+              "t": "row",
+              "icon": "qr",
+              "title": "Paiement marchand",
+              "trailing": {
+                "kind": "chevron"
+              },
+              "to": "pay-merchant"
+            },
+            {
+              "t": "row",
+              "icon": "users",
+              "title": "Cagnotte partagée",
+              "trailing": {
+                "kind": "chevron"
+              },
+              "to": "pay-cagnotte"
+            },
+            {
+              "t": "row",
+              "icon": "file",
+              "title": "Division de facture",
+              "trailing": {
+                "kind": "chevron"
+              },
+              "to": "pay-split"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pay-external",
+      "group": "payments",
+      "title": "Virement externe",
+      "subtitle": "Écran « Virement vers compte bancaire externe »",
+      "chrome": "sub",
+      "blocks": [
+        {
+          "t": "title",
+          "text": "Vers un compte bancaire"
+        },
+        {
+          "t": "subtitle",
+          "text": "Virement interbancaire RDC (rail ATS/RIP)"
+        },
+        {
+          "t": "field",
+          "label": "Banque bénéficiaire",
+          "required": "yes",
+          "ui": "select",
+          "options": [
+            "Rawbank",
+            "Equity BCDC",
+            "TMB",
+            "Trust Merchant Bank",
+            "Autre"
+          ]
+        },
+        {
+          "t": "field",
+          "label": "Numéro de compte / RIB",
+          "required": "yes",
+          "ui": "text"
+        },
+        {
+          "t": "field",
+          "label": "Nom du titulaire",
+          "required": "yes",
+          "ui": "text"
+        },
+        {
+          "t": "fieldrow",
+          "children": [
+            {
+              "t": "field",
+              "label": "Montant",
+              "required": "yes",
+              "ui": "number",
+              "prefix": "$"
+            },
+            {
+              "t": "field",
+              "label": "Devise",
+              "required": "yes",
+              "ui": "select",
+              "options": [
+                "USD",
+                "CDF"
+              ]
+            }
+          ]
+        },
+        {
+          "t": "field",
+          "label": "Motif du virement",
+          "required": "yes",
+          "ui": "text",
+          "placeholder": "Ex. Paiement fournisseur"
+        },
+        {
+          "t": "notice",
+          "kind": "warn",
+          "icon": "alert",
+          "text": "Délai de traitement estimé : sous 24h ouvrées via le rail interbancaire."
+        },
+        {
+          "t": "cta",
+          "children": [
+            {
+              "t": "button",
+              "text": "Continuer",
+              "style": "primary"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pay-cashinout",
+      "group": "payments",
+      "title": "Cash-in / Cash-out",
+      "subtitle": "Écran « Cash-in/Cash-out Mobile Money »",
+      "chrome": "sub",
+      "blocks": [
+        {
+          "t": "title",
+          "text": "Cash-in / Cash-out"
+        },
+        {
+          "t": "segmented",
+          "options": [
+            "Cash-in",
+            "Cash-out"
+          ],
+          "active": 0
+        },
+        {
+          "t": "field",
+          "label": "Opérateur Mobile Money",
+          "required": "yes",
+          "ui": "select",
+          "options": [
+            "Airtel Money",
+            "Orange Money",
+            "M-Pesa",
+            "Africell Money"
+          ]
+        },
+        {
+          "t": "field",
+          "label": "Numéro Mobile Money",
+          "required": "yes",
+          "ui": "text",
+          "placeholder": "9XX XXX XXX",
+          "prefix": "+243"
+        },
+        {
+          "t": "field",
+          "label": "Montant",
+          "required": "yes",
+          "ui": "number",
+          "prefix": "$"
+        },
+        {
+          "t": "notice",
+          "kind": "info",
+          "icon": "phone",
+          "text": "Frais estimés : $ 0.30 · Crédit instantané sur votre wallet Switsh."
+        },
+        {
+          "t": "cta",
+          "children": [
+            {
+              "t": "button",
+              "text": "Confirmer le dépôt",
+              "style": "primary"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pay-converter",
+      "group": "payments",
+      "title": "Convertisseur de devises",
+      "subtitle": "Écran « Convertisseur de devises »",
+      "chrome": "sub",
+      "blocks": [
+        {
+          "t": "title",
+          "text": "Convertir des devises"
+        },
+        {
+          "t": "card",
+          "children": [
+            {
+              "t": "section",
+              "text": "Vous convertissez"
+            },
+            {
+              "t": "field",
+              "label": "Montant",
+              "required": "yes",
+              "ui": "number",
+              "placeholder": "100",
+              "prefix": "$"
+            },
+            {
+              "t": "icon",
+              "icon": "arrows"
+            },
+            {
+              "t": "section",
+              "text": "Vous recevez (estimation)"
+            },
+            {
+              "t": "field",
+              "label": "Montant crédité",
+              "required": "yes",
+              "ui": "readonly",
+              "placeholder": "285 000 CDF"
+            }
+          ]
+        },
+        {
+          "t": "row",
+          "title": "Taux appliqué",
+          "trailing": {
+            "kind": "text",
+            "text": "1 USD = 2 850 CDF",
+            "bold": true
+          }
+        },
+        {
+          "t": "notice",
+          "kind": "info",
+          "icon": "shield",
+          "text": "Taux garanti pendant 30 secondes après affichage."
+        },
+        {
+          "t": "cta",
+          "children": [
+            {
+              "t": "button",
+              "text": "Confirmer la conversion",
+              "style": "primary"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pay-merchant",
+      "group": "payments",
+      "title": "Paiement marchand",
+      "subtitle": "Écran « Paiement marchand NFC/QR »",
+      "chrome": "sub",
+      "blocks": [
+        {
+          "t": "hero",
+          "icon": "qr",
+          "title": "Scannez pour payer",
+          "sub": "Ou approchez votre téléphone du terminal NFC"
+        },
+        {
+          "t": "card",
+          "children": [
+            {
+              "t": "row",
+              "title": "Marchand",
+              "trailing": {
+                "kind": "text",
+                "text": "Kin Marché",
+                "bold": false
+              }
+            },
+            {
+              "t": "row",
+              "title": "Montant",
+              "trailing": {
+                "kind": "text",
+                "text": "$ 12.50",
+                "bold": true
+              }
+            },
+            {
+              "t": "field",
+              "label": "Payer avec",
+              "required": "yes",
+              "ui": "select",
+              "options": [
+                "Wallet USD — $820.00",
+                "Wallet CDF — 628 400"
+              ]
+            }
+          ]
+        },
+        {
+          "t": "cta",
+          "children": [
+            {
+              "t": "button",
+              "text": "Confirmer le paiement",
+              "style": "primary",
+              "icon": "nfc"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pay-cagnotte",
+      "group": "payments",
+      "title": "Cagnotte partagée",
+      "subtitle": "Écran « Cagnotte partagée »",
+      "chrome": "sub",
+      "blocks": [
+        {
+          "t": "title",
+          "text": "Créer une cagnotte"
+        },
+        {
+          "t": "field",
+          "label": "Nom de la cagnotte",
+          "required": "yes",
+          "ui": "text",
+          "placeholder": "Ex. Anniversaire Papa"
+        },
+        {
+          "t": "fieldrow",
+          "children": [
+            {
+              "t": "field",
+              "label": "Objectif",
+              "required": "yes",
+              "ui": "number",
+              "placeholder": "200",
+              "prefix": "$"
+            },
+            {
+              "t": "field",
+              "label": "Devise",
+              "required": "yes",
+              "ui": "select",
+              "options": [
+                "USD",
+                "CDF"
+              ]
+            }
+          ]
+        },
+        {
+          "t": "field",
+          "label": "Date limite",
+          "required": "no",
+          "ui": "date"
+        },
+        {
+          "t": "field",
+          "label": "Visibilité",
+          "required": "yes",
+          "ui": "select",
+          "options": [
+            "Privée (invitation)",
+            "Lien public"
+          ]
+        },
+        {
+          "t": "progress",
+          "percent": 34
+        },
+        {
+          "t": "text",
+          "text": "$ 68 collectés sur $ 200 · 6 participants"
+        },
+        {
+          "t": "cta",
+          "children": [
+            {
+              "t": "button",
+              "text": "Créer la cagnotte",
+              "style": "primary",
+              "icon": "plus"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pay-split",
+      "group": "payments",
+      "title": "Division de facture",
+      "subtitle": "Écran « Division de facture »",
+      "chrome": "sub",
+      "blocks": [
+        {
+          "t": "title",
+          "text": "Diviser une facture"
+        },
+        {
+          "t": "fieldrow",
+          "children": [
+            {
+              "t": "field",
+              "label": "Montant total",
+              "required": "yes",
+              "ui": "number",
+              "placeholder": "40",
+              "prefix": "$"
+            },
+            {
+              "t": "field",
+              "label": "Devise",
+              "required": "yes",
+              "ui": "select",
+              "options": [
+                "USD",
+                "CDF"
+              ]
+            }
+          ]
+        },
+        {
+          "t": "segmented",
+          "options": [
+            "Égale",
+            "Personnalisée"
+          ],
+          "active": 0
+        },
+        {
+          "t": "card",
+          "children": [
+            {
+              "t": "row",
+              "lead": "JT",
+              "title": "Jonas Tshimanga",
+              "trailing": {
+                "kind": "text",
+                "text": "$ 10.00",
+                "bold": true
+              }
+            },
+            {
+              "t": "row",
+              "lead": "SM",
+              "title": "Sarah Mbuyi",
+              "trailing": {
+                "kind": "text",
+                "text": "$ 10.00",
+                "bold": true
+              }
+            },
+            {
+              "t": "row",
+              "lead": "MK",
+              "title": "Vous",
+              "trailing": {
+                "kind": "text",
+                "text": "$ 20.00",
+                "bold": true
+              }
+            }
+          ]
+        },
+        {
+          "t": "button",
+          "text": "Ajouter un participant",
+          "style": "secondary",
+          "small": true,
+          "icon": "plus"
+        },
+        {
+          "t": "cta",
+          "children": [
+            {
+              "t": "button",
+              "text": "Envoyer les demandes de paiement",
+              "style": "primary"
             }
           ]
         }

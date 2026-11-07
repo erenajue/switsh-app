@@ -8,6 +8,7 @@ data class ApplicationView(
     val customerType: CustomerType? = null,
     val taxResidence: String? = null,
     val kycTier: KycTier? = null,
+    val amlAssessment: AmlAssessmentView? = null,
     val contacts: ContactStatusView? = null,
     val nextActions: List<NextAction>? = null,
     val createdAt: String? = null,
